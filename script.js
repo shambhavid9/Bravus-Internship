@@ -6,12 +6,16 @@ form.addEventListener("submit", function(event) {
     const name = document.getElementById("name").value.trim();
     const email = document.getElementById("email").value.trim();
     const message = document.getElementById("message").value.trim();
+    const submitBtn = document.getElementById("submit-btn");
 
     if (name === "" || email === "" || message === "") {
         document.getElementById("form-message").innerText =
             "Please fill all the fields.";
         return;
     }
+
+    submitBtn.disabled = true;
+    submitBtn.innerText = "Sending...";
 
     fetch("http://localhost:3001/api/enquiries", {
         method: "POST",
@@ -38,9 +42,15 @@ form.addEventListener("submit", function(event) {
     .then(function(data) {
         document.getElementById("form-message").innerText =
             data.message;
+
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Send Enquiry";
     })
     .catch(function(error) {
         document.getElementById("form-message").innerText =
             error.message;
+
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Send Enquiry";
     });
 });
