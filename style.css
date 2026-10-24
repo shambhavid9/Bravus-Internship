@@ -1,84 +1,140 @@
 * {
     box-sizing: border-box;
 }
+
+html {
+    scroll-behavior: smooth;
+}
+
 body {
+    margin: 0;
     color: white;
     background-color: #0f1111;
-}
-#navbar {
-      height: 60px;
-      background-color: white;
-      display: flex;
-      align-items: center;
-      gap: 45px;
-      justify-content: space-between;
-      padding: 0 25px;
-      box-sizing: border-box;
-}
-
-button { 
-    background-color: rgb(113, 113, 17);
-}
-
-#navbar a {
-    color:  rgba(226, 30, 5, 0.923);
-    text-decoration: none;
     font-family: Arial, Helvetica, sans-serif;
-    
 }
 
-#navbar a:hover {
-    color: black;
+#navbar {
+    min-height: 60px;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    gap: 25px;
 }
 
 #logo {
     color: #111 !important;
-    font-family:Arial, Helvetica, sans-serif ;
-    font-size: 24px ;
+    font-size: 24px;
     font-weight: 700;
     letter-spacing: 0.5px;
     white-space: nowrap;
 }
 
+#logo span {
+    color: orange;
+}
+
+#navbar a {
+    color: rgba(226, 30, 5, 0.923);
+    margin: 0 15px;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+#navbar a:hover {
+    color: #f5a623;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.search-box input {
+    padding: 7px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.search-box button {
+    padding: 7px 12px;
+    background-color: #717111;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.search-box button:hover {
+    background-color: #f5a623;
+}
+
+button {
+    cursor: pointer;
+}
+
 #home {
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     padding: 80px 60px;
-    background-color: #0f1111;
 }
 
 #home h1 {
-    font-size: 45px;
-    margin-bottom: 20px;
+    font-size: 48px;
+    margin: 0 0 15px;
+    line-height: 1.2;
 }
 
 #home p {
     font-size: 18px;
-    color: lightgray;
+    color: #cccccc;
+    max-width: 650px;
+    line-height: 1.6;
     margin-bottom: 25px;
 }
 
 #home button {
-    padding: 12px 12px;
+    width: fit-content;
+    padding: 12px 20px;
     background-color: orange;
     color: black;
     border: none;
+    border-radius: 5px;
     font-size: 15px;
     cursor: pointer;
-    margin-left: 20px;
+    transition: 0.3s ease;
 }
 
 #home button:hover {
     background-color: white;
+    transform: translateY(-2px);
 }
 
 #about {
-    padding: 60px;
-    font-size: 17px;
-    background-color: rgb(117, 170, 198);
+    padding: 70px 60px;
+    background-color: #171a1a;
     color: white;
 }
 
+#about h2 {
+    color: #f5a623;
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+#about p {
+    color: #cccccc;
+    line-height: 1.7;
+    max-width: 900px;
+    font-size: 17px;
+}
+
 #services {
-    padding: 60px;
+    padding: 70px 60px;
     background-color: #f5f5f5;
     color: black;
 }
@@ -86,6 +142,7 @@ button {
 #services h2 {
     text-align: center;
     font-size: 34px;
+    margin-bottom: 40px;
 }
 
 .service-container {
@@ -98,114 +155,71 @@ button {
     flex: 1;
     padding: 30px;
     background-color: white;
-    color: black;
     text-align: center;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-    transition: 0.3s ease;
-
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .service-card:hover {
-    transform: translateY(-5px);
-    
+    transform: translateY(-8px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
-html {
-    scroll-behavior: smooth;
+.service-icon {
+    font-size: 35px;
+    margin-bottom: 15px;
 }
 
-button:hover {
-    background-color: grey;
-    cursor: pointer;
+.service-card h3 {
+    margin-bottom: 12px;
 }
 
-.search-box {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-#logo span {
-    color: orange;
+.service-card p {
+    color: #555;
+    line-height: 1.5;
 }
 
 #contact {
     background-color: #f5f5f5;
     color: #111;
     text-align: center;
-    padding:40px 20px;
+    padding: 70px 20px;
 }
 
 #contact h2 {
     margin-bottom: 10px;
-    font-size: 28px;
+    font-size: 30px;
 }
 
 #contact p {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     color: #555;
 }
 
 #contact button {
-    background-color:#e6a817 ;
-    padding:10px 20px;
+    background-color: #e6a817;
+    padding: 10px 20px;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    transition: 0.3s ease;
 }
 
 #contact button:hover {
-    background-color: #D2B48C;
+    background-color: #c89413;
 }
 
-footer {
-    background-color: #111;
-    color: white;
-    text-align: center;
-    padding: 15px; 
+#contact-form {
+    max-width: 450px;
+    margin: 25px auto 0;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    gap: 10px;
 }
 
-@media (max-width: 768px) {
-        .service-container {
-            flex-direction: column;
-        }
-        #home,
-        #about,
-        #services {
-            padding: 40px 20px;
-        }
-
-        #home h1 {
-            font-size: 32px;
-        }
-
-        #navbar {
-            height: auto;
-            flex-wrap: wrap;
-            padding: 15px 20px;
-            gap: 15px;
-        }
-
-        #logo {
-        font-size: 20px;
-        }
-
-        .search-box {
-        width: 100%;
-        justify-content: center;
-        }
-}
-      
-      #contact-form {
-        max-width: 450px;
-        margin: 25px auto 0;
-        display: flex;
-        flex-direction: column;
-        text-align: left;
-        gap: 10px;
-      }
 #contact-form label {
     font-weight: bold;
 }
@@ -216,6 +230,13 @@ footer {
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 15px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#contact-form input:focus,
+#contact-form textarea:focus {
+    outline: none;
+    border-color: #e6a817;
 }
 
 #contact-form textarea {
@@ -228,4 +249,67 @@ footer {
     padding: 12px;
 }
 
+footer {
+    background-color: #111;
+    color: white;
+    text-align: center;
+    padding: 15px;
+}
+@media (max-width: 768px) {
 
+    #navbar {
+        height: auto;
+        flex-direction: column;
+        padding: 15px 20px;
+        gap: 12px;
+    }
+
+    #logo {
+        font-size: 21px;
+    }
+
+    #navbar a {
+        margin: 0 8px;
+        font-size: 14px;
+    }
+
+    .search-box {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .search-box input {
+        width: 65%;
+    }
+
+    #home,
+    #about,
+    #services {
+        padding: 50px 20px;
+    }
+
+    #home {
+        min-height: 380px;
+    }
+
+    #home h1 {
+        font-size: 34px;
+    }
+
+    #home p {
+        font-size: 16px;
+    }
+
+    .service-container {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .service-card {
+        width: 100%;
+    }
+
+    #contact {
+        padding: 50px 20px;
+    }
+}
