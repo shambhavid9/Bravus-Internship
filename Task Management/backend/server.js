@@ -129,6 +129,39 @@ app.post("/api/users", async function(req, res) {
 
 });
 
+app.get(
+    "/api/users",
+    authenticateToken,
+    async function(req, res) {
+
+        try {
+
+            if (req.user.role !== "admin") {
+                return res.status(403).json({
+                    message: "Access denied. Admin only."
+                });
+            }
+
+            const users = await User.find().select("-password");
+
+            res.status(200).json({
+                message: "Users fetched successfully!",
+                users: users
+            });
+
+        } catch (error) {
+
+            console.log("USER FETCH ERROR:", error);
+
+            res.status(500).json({
+                message: "Failed to fetch users."
+            });
+
+        }
+
+    }
+);
+
 // LOGIN
 
 app.post("/api/login", async function(req, res) {
