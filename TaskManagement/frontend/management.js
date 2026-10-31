@@ -17,7 +17,7 @@ document.getElementById("taskForm").addEventListener("submit", async function(ev
 
     try {
 
-        const response = await fetch("https://bravus-internship-backend-kvdea2jpu-sd-9633.vercel.app/api/tasks", {
+        const response = await fetch("https://bravus-internship-backend.vercel.app/api/tasks", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -56,7 +56,7 @@ async function loadTasks() {
 
     try {
 
-        const response = await fetch("https://bravus-internship-backend-kvdea2jpu-sd-9633.vercel.app/api/tasks", {
+        const response = await fetch("https://bravus-internship-backend.vercel.app/api/tasks", {
             method: "GET",
             headers: {
                 "Authorization": "Bearer " + token
@@ -125,7 +125,7 @@ async function updateTask(taskId) {
     try {
 
         const response = await fetch(
-            `https://bravus-internship-backend-kvdea2jpu-sd-9633.vercel.app/api/tasks/${taskId}`,
+            `https://bravus-internship-backend.vercel.app/api/tasks/${taskId}`,
             {
                 method: "PUT",
                 headers: {
@@ -166,7 +166,7 @@ async function deleteTask(taskId) {
 
     try {
         const response = await fetch(
-            `https://bravus-internship-backend-kvdea2jpu-sd-9633.vercel.app/api/tasks/${taskId}`,
+            `https://bravus-internship-backend.vercel.app/api/tasks/${taskId}`,
             {
                 method: "DELETE",
                 headers: {
