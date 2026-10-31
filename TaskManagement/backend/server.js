@@ -15,6 +15,7 @@ app.get("/", function(req, res) {
 });
 
 app.use(cors());
+app.options("*", cors());
 app.use(express.json());
 
 function authenticateToken(req, res, next) {
