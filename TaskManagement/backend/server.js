@@ -10,6 +10,10 @@ const jwt = require("jsonwebtoken");
 
 const app = express();
 
+app.get("/", function(req, res) {
+    res.send("Task Management API is running.");
+});
+
 app.use(cors());
 app.use(express.json());
 
