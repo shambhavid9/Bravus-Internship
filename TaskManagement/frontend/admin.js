@@ -10,7 +10,7 @@ async function loadUsers() {
     try {
 
         const response = await fetch(
-            "http://localhost:3001/api/users",
+            "https://bravus-internship-backend-kvdea2jpu-sd-9633.vercel.app/api/users",
             {
                 method: "GET",
                 headers: {
@@ -59,7 +59,7 @@ async function loadTasks() {
     try {
 
         const response = await fetch(
-            "http://localhost:3001/api/tasks",
+            "https://bravus-internship-backend-kvdea2jpu-sd-9633.vercel.app/api/users",
             {
                 method: "GET",
                 headers: {
