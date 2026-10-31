@@ -13,8 +13,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// AUTHENTICATION MIDDLEWARE
-
 function authenticateToken(req, res, next) {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
@@ -37,8 +35,6 @@ function authenticateToken(req, res, next) {
     });
 }
 
-// ROLE AUTHORIZATION
-
 function authorizeRoles(...allowedRoles) {
     return function(req, res, next) {
 
@@ -51,8 +47,6 @@ function authorizeRoles(...allowedRoles) {
         next();
     };
 }
-
-// PROTECTED PROFILE ROUTE
 
 app.get(
     "/api/profile",
@@ -67,8 +61,6 @@ app.get(
     }
 );
 
-// ADMIN TEST ROUTE
-
 app.get(
     "/api/admin-test",
     authenticateToken,
@@ -81,8 +73,6 @@ app.get(
 
     }
 );
-
-// CREATE USER
 
 app.post("/api/users", async function(req, res) {
 
@@ -162,8 +152,6 @@ app.get(
     }
 );
 
-// LOGIN
-
 app.post("/api/login", async function(req, res) {
 
     const { email, password } = req.body;
@@ -230,8 +218,6 @@ app.post("/api/login", async function(req, res) {
     }
 
 });
-
-// CREATE TASK
 
 app.post(
     "/api/tasks",
@@ -436,8 +422,6 @@ app.put(
     }
 );
 
-// DELETE TASK
-
 app.delete(
     "/api/tasks/:id",
     authenticateToken,
@@ -472,8 +456,6 @@ app.delete(
 
     }
 );
-
-// DATABASE CONNECTION
 
 mongoose.connect(process.env.MONGODB_URI)
 
