@@ -255,6 +255,7 @@ footer {
     text-align: center;
     padding: 15px;
 }
+
 @media (max-width: 768px) {
 
     #navbar {
@@ -311,5 +312,145 @@ footer {
 
     #contact {
         padding: 50px 20px;
+    }
+}
+
+.portal-page {
+    min-height: 100vh;
+    background-color: #0f1111;
+    color: white;
+}
+
+.portal-navbar {
+    height: 70px;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 50px;
+}
+
+.portal-logo {
+    color: #111;
+    text-decoration: none;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.portal-logo span {
+    color: orange;
+}
+
+.logout-btn {
+    background-color: #111;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.logout-btn:hover {
+    background-color: #e6a817;
+    color: #111;
+}
+
+.portal-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 60px 30px;
+}
+
+.portal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    gap: 30px;
+}
+
+.portal-label {
+    color: #e6a817;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.portal-header h1 {
+    font-size: 38px;
+    margin: 0 0 10px;
+}
+
+.portal-header p {
+    color: #aaa;
+    margin: 0;
+    font-size: 16px;
+}
+
+.refresh-btn {
+    background-color: #e6a817;
+    color: #111;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.refresh-btn:hover {
+    background-color: white;
+}
+
+.tasks-section {
+    width: 100%;
+}
+
+.task-card {
+    background-color: #171a1a;
+    border: 1px solid #292d2d;
+    border-radius: 10px;
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.task-card h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 21px;
+}
+
+.task-card p {
+    color: #bbb;
+    line-height: 1.6;
+    margin: 8px 0;
+}
+
+.task-card strong {
+    color: white;
+}
+
+@media (max-width: 768px) {
+
+    .portal-navbar {
+        padding: 0 20px;
+    }
+
+    .portal-container {
+        padding: 40px 20px;
+    }
+
+    .portal-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .portal-header h1 {
+        font-size: 30px;
+    }
+
+    .refresh-btn {
+        width: 100%;
     }
 }

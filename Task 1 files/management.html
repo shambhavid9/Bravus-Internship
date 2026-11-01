@@ -1,0 +1,62 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Management Portal</title>
+</head>
+<body>
+
+    <h1>Management Portal</h1>
+    <p>Welcome, Management!</p>
+
+    <button onclick="logout()">Logout</button>
+
+    <hr>
+
+    <h2>Create Task</h2>
+
+    <form id="taskForm">
+
+        <input
+            type="text"
+            id="title"
+            placeholder="Task title"
+            required
+        >
+
+        <textarea
+            id="description"
+            placeholder="Task description"
+            required
+        ></textarea>
+
+        <select id="assignedTo" required>
+    <option value="">Loading users...</option>
+</select>
+
+        <select id="priority">
+            <option value="Low">Low</option>
+            <option value="Medium" selected>Medium</option>
+            <option value="High">High</option>
+        </select>
+
+        <input type="date" id="dueDate">
+
+        <button type="submit">Create Task</button>
+
+    </form>
+
+    <p id="message"></p>
+
+    <h2>Tasks</h2>
+
+    <button onclick="loadTasks()">Refresh Tasks</button>
+
+    <div id="tasks"></div>
+
+    <script src="management.js"></script>
+
+</body>
+</html>
