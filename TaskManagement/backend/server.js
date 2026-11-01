@@ -1,10 +1,12 @@
+
 require("dotenv").config();
 
-const dns = require('dns');
+const dns = require("dns");
 
 if (!process.env.VERCEL) {
-    dns.setServers(['8.8.8.8', '8.8.4.4']);
+    dns.setServers(["8.8.8.8", "8.8.4.4"]);
 }
+
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -15,13 +17,55 @@ const jwt = require("jsonwebtoken");
 
 const app = express();
 
+app.use(cors());
+app.use(express.json());
+
+// MongoDB connection
+let dbConnectionPromise;
+
+async function connectDB() {
+    if (mongoose.connection.readyState === 1) {
+        return;
+    }
+
+    if (!dbConnectionPromise) {
+        if (!process.env.MONGODB_URI) {
+            throw new Error("MONGODB_URI is missing.");
+        }
+
+        dbConnectionPromise = mongoose.connect(process.env.MONGODB_URI)
+            .then(function() {
+                console.log("MongoDB connected successfully!");
+            })
+            .catch(function(error) {
+                dbConnectionPromise = null;
+                throw error;
+            });
+    }
+
+    await dbConnectionPromise;
+}
+
+// Ensure database is connected before handling API requests
+app.use(async function(req, res, next) {
+    try {
+        await connectDB();
+        next();
+    } catch (error) {
+        console.log("MongoDB connection error:", error.message);
+
+        res.status(503).json({
+            message: "Database connection failed."
+        });
+    }
+});
+
+// Root route
 app.get("/", function(req, res) {
     res.send("Task Management API is running.");
 });
 
-app.use(cors());
-app.use(express.json());
-
+// Authentication middleware
 function authenticateToken(req, res, next) {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
@@ -44,9 +88,9 @@ function authenticateToken(req, res, next) {
     });
 }
 
+// Role authorization middleware
 function authorizeRoles(...allowedRoles) {
     return function(req, res, next) {
-
         if (!allowedRoles.includes(req.user.role)) {
             return res.status(403).json({
                 message: "Access denied."
@@ -57,34 +101,32 @@ function authorizeRoles(...allowedRoles) {
     };
 }
 
+// Get user profile
 app.get(
     "/api/profile",
     authenticateToken,
     function(req, res) {
-
         res.status(200).json({
             message: "Protected route accessed successfully!",
             user: req.user
         });
-
     }
 );
 
+// Admin test route
 app.get(
     "/api/admin-test",
     authenticateToken,
     authorizeRoles("admin"),
     function(req, res) {
-
         res.status(200).json({
             message: "Admin access granted!"
         });
-
     }
 );
 
+// Create user
 app.post("/api/users", async function(req, res) {
-
     const { name, email, password, role } = req.body;
 
     if (!name || !email || !password) {
@@ -94,7 +136,6 @@ app.post("/api/users", async function(req, res) {
     }
 
     try {
-
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = new User({
@@ -115,26 +156,21 @@ app.post("/api/users", async function(req, res) {
                 role: newUser.role
             }
         });
-
     } catch (error) {
-
         console.log("USER CREATION ERROR:", error);
 
         res.status(500).json({
             message: "Failed to create user."
         });
-
     }
-
 });
 
+// Get all users (admin only)
 app.get(
     "/api/users",
     authenticateToken,
     async function(req, res) {
-
         try {
-
             if (req.user.role !== "admin") {
                 return res.status(403).json({
                     message: "Access denied. Admin only."
@@ -147,22 +183,18 @@ app.get(
                 message: "Users fetched successfully!",
                 users: users
             });
-
         } catch (error) {
-
             console.log("USER FETCH ERROR:", error);
 
             res.status(500).json({
                 message: "Failed to fetch users."
             });
-
         }
-
     }
 );
 
+// User login
 app.post("/api/login", async function(req, res) {
-
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -172,7 +204,6 @@ app.post("/api/login", async function(req, res) {
     }
 
     try {
-
         const user = await User.findOne({
             email: email
         });
@@ -215,25 +246,21 @@ app.post("/api/login", async function(req, res) {
                 role: user.role
             }
         });
-
     } catch (error) {
-
         console.log("LOGIN ERROR:", error);
 
         res.status(500).json({
             message: "Login failed."
         });
-
     }
-
 });
 
+// Create task
 app.post(
     "/api/tasks",
     authenticateToken,
     authorizeRoles("management", "admin"),
     async function(req, res) {
-
         const {
             title,
             description,
@@ -249,7 +276,6 @@ app.post(
         }
 
         try {
-
             const newTask = new Task({
                 title: title,
                 description: description,
@@ -264,37 +290,28 @@ app.post(
                 message: "Task created successfully!",
                 task: newTask
             });
-
         } catch (error) {
-
             console.log("TASK CREATION ERROR:", error);
 
             res.status(500).json({
                 message: "Failed to create task."
             });
-
         }
-
     }
 );
 
+// Get tasks
 app.get(
     "/api/tasks",
     authenticateToken,
     async function(req, res) {
-
         try {
-
             let tasks;
 
-            if(req.user.role === "user") {
-
+            if (req.user.role === "user") {
                 tasks = await Task.find({
                     assignedTo: req.user.id
-                }).populate(
-                    "assignedTo",
-                    "name email"
-                );
+                }).populate("assignedTo", "name email");
             } else {
                 tasks = await Task.find().populate(
                     "assignedTo",
@@ -316,13 +333,12 @@ app.get(
     }
 );
 
+// Get task by ID
 app.get(
     "/api/tasks/:id",
     authenticateToken,
     async function(req, res) {
-
         try {
-
             const task = await Task.findById(req.params.id).populate(
                 "assignedTo",
                 "name email"
@@ -334,10 +350,10 @@ app.get(
                 });
             }
 
-            // Normal users can only view their own assigned tasks
             if (
                 req.user.role === "user" &&
-                task.assignedTo._id.toString() !== req.user.id
+                (!task.assignedTo ||
+                    task.assignedTo._id.toString() !== req.user.id)
             ) {
                 return res.status(403).json({
                     message: "Access denied."
@@ -348,26 +364,22 @@ app.get(
                 message: "Task fetched successfully!",
                 task: task
             });
-
         } catch (error) {
-
             console.log("TASK FETCH ERROR:", error);
 
             res.status(500).json({
                 message: "Failed to fetch task."
             });
-
         }
-
     }
 );
 
+// Update task
 app.put(
     "/api/tasks/:id",
     authenticateToken,
     authorizeRoles("management", "admin"),
     async function(req, res) {
-
         const {
             title,
             description,
@@ -378,7 +390,6 @@ app.put(
         } = req.body;
 
         try {
-
             const task = await Task.findById(req.params.id);
 
             if (!task) {
@@ -387,29 +398,12 @@ app.put(
                 });
             }
 
-            if (title !== undefined) {
-                task.title = title;
-            }
-
-            if (description !== undefined) {
-                task.description = description;
-            }
-
-            if (assignedTo !== undefined) {
-                task.assignedTo = assignedTo;
-            }
-
-            if (priority !== undefined) {
-                task.priority = priority;
-            }
-
-            if (status !== undefined) {
-                task.status = status;
-            }
-
-            if (dueDate !== undefined) {
-                task.dueDate = dueDate;
-            }
+            if (title !== undefined) task.title = title;
+            if (description !== undefined) task.description = description;
+            if (assignedTo !== undefined) task.assignedTo = assignedTo;
+            if (priority !== undefined) task.priority = priority;
+            if (status !== undefined) task.status = status;
+            if (dueDate !== undefined) task.dueDate = dueDate;
 
             await task.save();
 
@@ -417,28 +411,23 @@ app.put(
                 message: "Task updated successfully!",
                 task: task
             });
-
         } catch (error) {
-
             console.log("TASK UPDATE ERROR:", error);
 
             res.status(500).json({
                 message: "Failed to update task."
             });
-
         }
-
     }
 );
 
+// Delete task
 app.delete(
     "/api/tasks/:id",
     authenticateToken,
     authorizeRoles("management", "admin"),
     async function(req, res) {
-
         try {
-
             const task = await Task.findById(req.params.id);
 
             if (!task) {
@@ -452,38 +441,27 @@ app.delete(
             res.status(200).json({
                 message: "Task deleted successfully!"
             });
-
         } catch (error) {
-
             console.log("TASK DELETE ERROR:", error);
 
             res.status(500).json({
                 message: "Failed to delete task."
             });
-
         }
-
     }
 );
 
-mongoose.connect(process.env.MONGODB_URI)
-
-    .then(function() {
-
-        console.log("MongoDB connected successfully!");
-
-        app.listen(3001, function() {
-
-            console.log("Server is running on port 3001");
-
+// Local server startup
+if (require.main === module) {
+    connectDB()
+        .then(function() {
+            app.listen(3001, function() {
+                console.log("Server is running on port 3001");
+            });
+        })
+        .catch(function(error) {
+            console.log("MongoDB connection error:", error.message);
         });
+}
 
-    })
-
-    .catch(function(error) {
-
-        console.log("MongoDB connection error:", error);
-
-    });
-
-    module.exports = app;
+module.exports = app;
