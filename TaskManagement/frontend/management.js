@@ -78,26 +78,33 @@ async function loadTasks() {
 
             const taskElement = document.createElement("div");
 
-            taskElement.innerHTML = `
-                <hr>
-                <h3>${task.title}</h3>
+            const assignedUser = task.assignedTo;
 
-                <p>${task.description}</p>
+taskElement.innerHTML = `
+console.log("ASSIGNED USER:", task.assignedTo);
+    <hr>
+    <h3>${task.title}</h3>
 
-                <p>Priority: ${task.priority}</p>
+    <p>${task.description}</p>
 
-                <p>Status: ${task.status || "Pending"}</p>
+    <p>Priority: ${task.priority}</p>
 
-                <p>Assigned To: ${task.assignedTo}</p>
+    <p>Status: ${task.status || "Pending"}</p>
 
-                <button onclick="updateTask('${task._id}')">
-                    Update
-                </button>
+    <p>Assigned To: ${
+        assignedUser && typeof assignedUser === "object"
+            ? `${assignedUser.name} (${assignedUser.email})`
+            : "Unassigned"
+    }</p>
 
-                <button onclick="deleteTask('${task._id}')">
-                Delete
-                </button>
-            `;
+    <button onclick="updateTask('${task._id}')">
+        Update
+    </button>
+
+    <button onclick="deleteTask('${task._id}')">
+        Delete
+    </button>
+`;
 
             tasksDiv.appendChild(taskElement);
 
@@ -198,4 +205,45 @@ function logout() {
 }
 
 
+async function loadUsers() {
+    try {
+        const response = await fetch(
+            "https://bravus-internship-backend.vercel.app/api/users",
+            {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        const assignedTo = document.getElementById("assignedTo");
+
+        assignedTo.innerHTML = '<option value="">Select a user</option>';
+
+        if (!response.ok) {
+            assignedTo.innerHTML =
+                '<option value="">Unable to load users</option>';
+            console.error("USER FETCH ERROR:", data.message);
+            return;
+        }
+
+        data.users.forEach(user => {
+            const option = document.createElement("option");
+
+            option.value = user._id;
+            option.textContent = user.name + " (" + user.email + ")";
+
+            assignedTo.appendChild(option);
+        });
+
+    } catch (error) {
+        console.error("LOAD USERS ERROR:", error);
+    }
+}
+
+
+loadUsers();
 loadTasks();

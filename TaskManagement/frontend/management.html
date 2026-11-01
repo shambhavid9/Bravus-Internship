@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,41 +7,56 @@
     <title>Management Portal</title>
 </head>
 <body>
+
     <h1>Management Portal</h1>
-    <p> Welcome, Management! </p>
+    <p>Welcome, Management!</p>
+
     <button onclick="logout()">Logout</button>
+
     <hr>
+
     <h2>Create Task</h2>
 
-<form id="taskForm">
+    <form id="taskForm">
 
-    <input type="text" id="title" placeholder="Task title" required>
+        <input
+            type="text"
+            id="title"
+            placeholder="Task title"
+            required
+        >
 
-    <textarea id="description" placeholder="Task description" required></textarea>
+        <textarea
+            id="description"
+            placeholder="Task description"
+            required
+        ></textarea>
 
-    <input type="text" id="assignedTo" placeholder="User ID" required>
+        <select id="assignedTo" required>
+    <option value="">Loading users...</option>
+</select>
 
-    <select id="priority">
-        <option value="Low">Low</option>
-        <option value="Medium" selected>Medium</option>
-        <option value="High">High</option>
-    </select>
+        <select id="priority">
+            <option value="Low">Low</option>
+            <option value="Medium" selected>Medium</option>
+            <option value="High">High</option>
+        </select>
 
-    <input type="date" id="dueDate">
+        <input type="date" id="dueDate">
 
-    <button type="submit">Create Task</button>
+        <button type="submit">Create Task</button>
 
-</form>
+    </form>
 
-<p id="message"></p>
+    <p id="message"></p>
 
-<h2>Tasks</h2>
+    <h2>Tasks</h2>
 
-<button onclick="loadTasks()">Refresh Tasks</button>
+    <button onclick="loadTasks()">Refresh Tasks</button>
 
-<div id="tasks"></div>
+    <div id="tasks"></div>
+
+    <script src="management.js"></script>
 
 </body>
-
-<script src="management.js"></script>
 </html>

@@ -166,23 +166,23 @@ app.post("/api/users", async function(req, res) {
 });
 
 // Get all users (admin only)
+
 app.get(
     "/api/users",
     authenticateToken,
+    authorizeRoles("management", "admin"),
     async function(req, res) {
-        try {
-            if (req.user.role !== "admin") {
-                return res.status(403).json({
-                    message: "Access denied. Admin only."
-                });
-            }
 
-            const users = await User.find().select("-password");
+        try {
+            const users = await User.find({
+                role: "user"
+            }).select("-password");
 
             res.status(200).json({
                 message: "Users fetched successfully!",
                 users: users
             });
+
         } catch (error) {
             console.log("USER FETCH ERROR:", error);
 
@@ -190,8 +190,10 @@ app.get(
                 message: "Failed to fetch users."
             });
         }
+
     }
 );
+
 
 // User login
 app.post("/api/login", async function(req, res) {
