@@ -120,24 +120,28 @@ taskElement.innerHTML = `
 
 
 
+
 async function updateTask(taskId) {
 
     const newPriority = prompt(
         "Enter priority: Low, Medium or High"
     );
-
     if (!newPriority) return;
 
     const newStatus = prompt(
         "Enter status: To Do, In Progress, In Review or Done"
     );
-
     if (!newStatus) return;
+
+    const newDueDate = prompt(
+        "Enter due date (YYYY-MM-DD), or leave blank to keep existing date:"
+    );
 
     const priority = newPriority.trim().charAt(0).toUpperCase()
         + newPriority.trim().slice(1).toLowerCase();
 
-    const status = newStatus.trim().toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+    const status = newStatus.trim().toLowerCase()
+        .replace(/\b\w/g, char => char.toUpperCase());
 
     const validPriorities = ["Low", "Medium", "High"];
     const validStatuses = ["To Do", "In Progress", "In Review", "Done"];
@@ -152,6 +156,21 @@ async function updateTask(taskId) {
         return;
     }
 
+    const updateData = {
+        priority: priority,
+        status: status
+    };
+
+    if (newDueDate && newDueDate.trim() !== "") {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(newDueDate.trim()) ||
+            isNaN(Date.parse(newDueDate.trim() + "T00:00:00"))) {
+            alert("Invalid date. Use YYYY-MM-DD.");
+            return;
+        }
+
+        updateData.dueDate = newDueDate.trim();
+    }
+
     try {
 
         const response = await fetch(
@@ -162,10 +181,7 @@ async function updateTask(taskId) {
                     "Content-Type": "application/json",
                     "Authorization": "Bearer " + token
                 },
-                body: JSON.stringify({
-                    priority: priority,
-                    status: status
-                })
+                body: JSON.stringify(updateData)
             }
         );
 
@@ -184,6 +200,7 @@ async function updateTask(taskId) {
 
     }
 }
+
 
 
 async function deleteTask(taskId) {
