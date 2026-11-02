@@ -140,7 +140,7 @@ async function updateTask(taskId) {
                     "Authorization": "Bearer " + token
                 },
                 body: JSON.stringify({
-                    priority: newPriority
+                priority: newPriority.trim().charAt(0).toUpperCase() + newPriority.trim().slice(1).toLowerCase()
                 })
             }
         );
