@@ -119,13 +119,36 @@ taskElement.innerHTML = `
 }
 
 
+
 async function updateTask(taskId) {
 
     const newPriority = prompt(
-        "Enter new priority: Low, Medium or High"
+        "Enter priority: Low, Medium or High"
     );
 
-    if (!newPriority) {
+    if (!newPriority) return;
+
+    const newStatus = prompt(
+        "Enter status: To Do, In Progress, In Review or Done"
+    );
+
+    if (!newStatus) return;
+
+    const priority = newPriority.trim().charAt(0).toUpperCase()
+        + newPriority.trim().slice(1).toLowerCase();
+
+    const status = newStatus.trim().toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+
+    const validPriorities = ["Low", "Medium", "High"];
+    const validStatuses = ["To Do", "In Progress", "In Review", "Done"];
+
+    if (!validPriorities.includes(priority)) {
+        alert("Invalid priority. Enter Low, Medium or High.");
+        return;
+    }
+
+    if (!validStatuses.includes(status)) {
+        alert("Invalid status. Enter To Do, In Progress, In Review or Done.");
         return;
     }
 
@@ -140,7 +163,8 @@ async function updateTask(taskId) {
                     "Authorization": "Bearer " + token
                 },
                 body: JSON.stringify({
-                priority: newPriority.trim().charAt(0).toUpperCase() + newPriority.trim().slice(1).toLowerCase()
+                    priority: priority,
+                    status: status
                 })
             }
         );
@@ -159,8 +183,8 @@ async function updateTask(taskId) {
         alert("Unable to update task.");
 
     }
-
 }
+
 
 async function deleteTask(taskId) {
     const confirmDelete = confirm(
