@@ -142,7 +142,7 @@ app.post("/api/users", async function(req, res) {
             name: name,
             email: email,
             password: hashedPassword,
-            role: role || "user"
+            role: "user"
         });
 
         await newUser.save();
@@ -226,6 +226,12 @@ app.put(
                 return res.status(404).json({
                     message: "User not found."
                 });
+            }
+            
+            if (user._id.toString() === req.user.id && role !== "admin") {
+            return res.status(403).json({
+            message: "You cannot change your own admin role."
+            });
             }
 
             user.role = role;
@@ -336,6 +342,19 @@ app.post(
                 message: "Title, description and assignedTo are required."
             });
         }
+        const validPriorities = ["Low", "Medium", "High"];
+
+        if (priority && !validPriorities.includes(priority)) {
+        return res.status(400).json({
+        message: "Invalid priority. Use Low, Medium or High."
+        });
+        }
+
+        if (dueDate && isNaN(Date.parse(dueDate))) {
+        return res.status(400).json({
+        message: "Invalid due date."
+        });
+        }
 
         try {
             const newTask = new Task({
@@ -396,7 +415,7 @@ app.get(
 );
 
 // Get task by ID
-app.get(
+app.get (
     "/api/tasks/:id",
     authenticateToken,
     async function(req, res) {
