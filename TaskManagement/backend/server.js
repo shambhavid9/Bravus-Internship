@@ -46,7 +46,7 @@ async function connectDB() {
     await dbConnectionPromise;
 }
 
-// Ensure database is connected before handling API requests
+// Ensure database is connected before API requests
 app.use(async function(req, res, next) {
     try {
         await connectDB();
@@ -125,11 +125,18 @@ app.get(
     }
 );
 
-// Create user
+// Create user (public registration always creates User role)
 app.post("/api/users", async function(req, res) {
-    const { name, email, password, role } = req.body;
+    const { name, email, password } = req.body;
 
-    if (!name || !email || !password) {
+    if (
+        typeof name !== "string" ||
+        !name.trim() ||
+        typeof email !== "string" ||
+        !email.trim() ||
+        typeof password !== "string" ||
+        !password
+    ) {
         return res.status(400).json({
             message: "Name, email and password are required."
         });
@@ -139,8 +146,8 @@ app.post("/api/users", async function(req, res) {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = new User({
-            name: name,
-            email: email,
+            name: name.trim(),
+            email: email.trim(),
             password: hashedPassword,
             role: "user"
         });
@@ -159,36 +166,39 @@ app.post("/api/users", async function(req, res) {
     } catch (error) {
         console.log("USER CREATION ERROR:", error);
 
+        if (error.code === 11000) {
+            return res.status(409).json({
+                message: "An account with this email already exists."
+            });
+        }
+
         res.status(500).json({
             message: "Failed to create user."
         });
     }
 });
 
-// Get all users (admin only)
-
+// Get users (Management and Admin)
 app.get(
     "/api/users",
     authenticateToken,
     authorizeRoles("management", "admin"),
     async function(req, res) {
-
         try {
             let users;
 
-if (req.user.role === "admin") {
-    users = await User.find().select("-password");
-} else {
-    users = await User.find({
-        role: "user"
-    }).select("-password");
-}
+            if (req.user.role === "admin") {
+                users = await User.find().select("-password");
+            } else {
+                users = await User.find({
+                    role: "user"
+                }).select("-password");
+            }
 
             res.status(200).json({
                 message: "Users fetched successfully!",
                 users: users
             });
-
         } catch (error) {
             console.log("USER FETCH ERROR:", error);
 
@@ -196,18 +206,15 @@ if (req.user.role === "admin") {
                 message: "Failed to fetch users."
             });
         }
-
     }
 );
 
-
-// Update user role (admin only)
+// Update user role (Admin only)
 app.put(
     "/api/users/:id/role",
     authenticateToken,
     authorizeRoles("admin"),
     async function(req, res) {
-
         const { role } = req.body;
 
         const validRoles = ["user", "management", "admin"];
@@ -218,8 +225,13 @@ app.put(
             });
         }
 
-        try {
+        if (!mongoose.isValidObjectId(req.params.id)) {
+            return res.status(400).json({
+                message: "Invalid user ID."
+            });
+        }
 
+        try {
             const user = await User.findById(req.params.id);
 
             if (!user) {
@@ -227,11 +239,14 @@ app.put(
                     message: "User not found."
                 });
             }
-            
-            if (user._id.toString() === req.user.id && role !== "admin") {
-            return res.status(403).json({
-            message: "You cannot change your own admin role."
-            });
+
+            if (
+                user._id.toString() === req.user.id &&
+                role !== "admin"
+            ) {
+                return res.status(403).json({
+                    message: "You cannot change your own admin role."
+                });
             }
 
             user.role = role;
@@ -247,19 +262,15 @@ app.put(
                     role: user.role
                 }
             });
-
         } catch (error) {
-
             console.log("ROLE UPDATE ERROR:", error);
 
             res.status(500).json({
                 message: "Failed to update user role."
             });
-
         }
     }
 );
-
 
 // User login
 app.post("/api/login", async function(req, res) {
@@ -323,7 +334,7 @@ app.post("/api/login", async function(req, res) {
     }
 });
 
-// Create task
+// Create task (Management and Admin)
 app.post(
     "/api/tasks",
     authenticateToken,
@@ -337,32 +348,61 @@ app.post(
             dueDate
         } = req.body;
 
-        if (!title || !description || !assignedTo) {
+        if (
+            typeof title !== "string" ||
+            !title.trim() ||
+            typeof description !== "string" ||
+            !description.trim() ||
+            !assignedTo
+        ) {
             return res.status(400).json({
                 message: "Title, description and assignedTo are required."
             });
         }
+
         const validPriorities = ["Low", "Medium", "High"];
 
-        if (priority && !validPriorities.includes(priority)) {
-        return res.status(400).json({
-        message: "Invalid priority. Use Low, Medium or High."
-        });
+        if (
+            priority !== undefined &&
+            !validPriorities.includes(priority)
+        ) {
+            return res.status(400).json({
+                message: "Invalid priority. Use Low, Medium or High."
+            });
         }
 
-        if (dueDate && isNaN(Date.parse(dueDate))) {
-        return res.status(400).json({
-        message: "Invalid due date."
-        });
+        if (
+            dueDate !== undefined &&
+            dueDate !== null &&
+            dueDate !== "" &&
+            isNaN(Date.parse(dueDate))
+        ) {
+            return res.status(400).json({
+                message: "Invalid due date."
+            });
+        }
+
+        if (!mongoose.isValidObjectId(assignedTo)) {
+            return res.status(400).json({
+                message: "Invalid assigned user ID."
+            });
         }
 
         try {
+            const assignedUser = await User.findById(assignedTo);
+
+            if (!assignedUser) {
+                return res.status(404).json({
+                    message: "Assigned user not found."
+                });
+            }
+
             const newTask = new Task({
-                title: title,
-                description: description,
+                title: title.trim(),
+                description: description.trim(),
                 assignedTo: assignedTo,
                 priority: priority || "Medium",
-                dueDate: dueDate
+                dueDate: dueDate || undefined
             });
 
             await newTask.save();
@@ -415,10 +455,16 @@ app.get(
 );
 
 // Get task by ID
-app.get (
+app.get(
     "/api/tasks/:id",
     authenticateToken,
     async function(req, res) {
+        if (!mongoose.isValidObjectId(req.params.id)) {
+            return res.status(400).json({
+                message: "Invalid task ID."
+            });
+        }
+
         try {
             const task = await Task.findById(req.params.id).populate(
                 "assignedTo",
@@ -455,7 +501,7 @@ app.get (
     }
 );
 
-// Update task
+// Update task (Management and Admin)
 app.put(
     "/api/tasks/:id",
     authenticateToken,
@@ -470,6 +516,71 @@ app.put(
             dueDate
         } = req.body;
 
+        const validPriorities = ["Low", "Medium", "High"];
+        const validStatuses = ["To Do", "In Progress", "In Review", "Done"];
+
+        if (!mongoose.isValidObjectId(req.params.id)) {
+            return res.status(400).json({
+                message: "Invalid task ID."
+            });
+        }
+
+        if (
+            title !== undefined &&
+            (typeof title !== "string" || !title.trim())
+        ) {
+            return res.status(400).json({
+                message: "Title cannot be empty."
+            });
+        }
+
+        if (
+            description !== undefined &&
+            (typeof description !== "string" || !description.trim())
+        ) {
+            return res.status(400).json({
+                message: "Description cannot be empty."
+            });
+        }
+
+        if (
+            priority !== undefined &&
+            !validPriorities.includes(priority)
+        ) {
+            return res.status(400).json({
+                message: "Invalid priority. Use Low, Medium or High."
+            });
+        }
+
+        if (
+            status !== undefined &&
+            !validStatuses.includes(status)
+        ) {
+            return res.status(400).json({
+                message: "Invalid status. Use To Do, In Progress, In Review or Done."
+            });
+        }
+
+        if (
+            dueDate !== undefined &&
+            dueDate !== null &&
+            dueDate !== "" &&
+            isNaN(Date.parse(dueDate))
+        ) {
+            return res.status(400).json({
+                message: "Invalid due date."
+            });
+        }
+
+        if (
+            assignedTo !== undefined &&
+            !mongoose.isValidObjectId(assignedTo)
+        ) {
+            return res.status(400).json({
+                message: "Invalid assigned user ID."
+            });
+        }
+
         try {
             const task = await Task.findById(req.params.id);
 
@@ -479,12 +590,37 @@ app.put(
                 });
             }
 
-            if (title !== undefined) task.title = title;
-            if (description !== undefined) task.description = description;
-            if (assignedTo !== undefined) task.assignedTo = assignedTo;
-            if (priority !== undefined) task.priority = priority;
-            if (status !== undefined) task.status = status;
-            if (dueDate !== undefined) task.dueDate = dueDate;
+            if (title !== undefined) {
+                task.title = title.trim();
+            }
+
+            if (description !== undefined) {
+                task.description = description.trim();
+            }
+
+            if (assignedTo !== undefined) {
+                const assignedUser = await User.findById(assignedTo);
+
+                if (!assignedUser) {
+                    return res.status(404).json({
+                        message: "Assigned user not found."
+                    });
+                }
+
+                task.assignedTo = assignedTo;
+            }
+
+            if (priority !== undefined) {
+                task.priority = priority;
+            }
+
+            if (status !== undefined) {
+                task.status = status;
+            }
+
+            if (dueDate !== undefined) {
+                task.dueDate = dueDate === "" ? null : dueDate;
+            }
 
             await task.save();
 
@@ -502,12 +638,18 @@ app.put(
     }
 );
 
-// Delete task
+// Delete task (Management and Admin)
 app.delete(
     "/api/tasks/:id",
     authenticateToken,
     authorizeRoles("management", "admin"),
     async function(req, res) {
+        if (!mongoose.isValidObjectId(req.params.id)) {
+            return res.status(400).json({
+                message: "Invalid task ID."
+            });
+        }
+
         try {
             const task = await Task.findById(req.params.id);
 
