@@ -174,9 +174,15 @@ app.get(
     async function(req, res) {
 
         try {
-            const users = await User.find({
-                role: "user"
-            }).select("-password");
+            let users;
+
+if (req.user.role === "admin") {
+    users = await User.find().select("-password");
+} else {
+    users = await User.find({
+        role: "user"
+    }).select("-password");
+}
 
             res.status(200).json({
                 message: "Users fetched successfully!",
@@ -191,6 +197,60 @@ app.get(
             });
         }
 
+    }
+);
+
+
+// Update user role (admin only)
+app.put(
+    "/api/users/:id/role",
+    authenticateToken,
+    authorizeRoles("admin"),
+    async function(req, res) {
+
+        const { role } = req.body;
+
+        const validRoles = ["user", "management", "admin"];
+
+        if (!validRoles.includes(role)) {
+            return res.status(400).json({
+                message: "Invalid role. Use user, management or admin."
+            });
+        }
+
+        try {
+
+            const user = await User.findById(req.params.id);
+
+            if (!user) {
+                return res.status(404).json({
+                    message: "User not found."
+                });
+            }
+
+            user.role = role;
+
+            await user.save();
+
+            res.status(200).json({
+                message: "User role updated successfully!",
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role
+                }
+            });
+
+        } catch (error) {
+
+            console.log("ROLE UPDATE ERROR:", error);
+
+            res.status(500).json({
+                message: "Failed to update user role."
+            });
+
+        }
     }
 );
 
