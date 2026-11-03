@@ -5,13 +5,96 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Management Portal</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background: #f5f5f5;
+        }
+
+        input, textarea, select, button {
+            padding: 10px;
+            margin: 6px 0;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .dashboard {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            min-width: 130px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .card h3 {
+            margin-top: 0;
+        }
+
+        .filters {
+            background: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        #tasks {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+        }
+    </style>
 </head>
+
 <body>
 
     <h1>Management Portal</h1>
     <p>Welcome, Management!</p>
 
     <button onclick="logout()">Logout</button>
+
+    <hr>
+
+    <h2>Task Dashboard</h2>
+
+    <div class="dashboard">
+
+        <div class="card">
+            <h3>Total Tasks</h3>
+            <p id="totalTasks">0</p>
+        </div>
+
+        <div class="card">
+            <h3>To Do</h3>
+            <p id="todoTasks">0</p>
+        </div>
+
+        <div class="card">
+            <h3>In Progress</h3>
+            <p id="inProgressTasks">0</p>
+        </div>
+
+        <div class="card">
+            <h3>Completed</h3>
+            <p id="completedTasks">0</p>
+        </div>
+
+        <div class="card">
+            <h3>Overdue</h3>
+            <p id="overdueTasks">0</p>
+        </div>
+
+    </div>
 
     <hr>
 
@@ -26,15 +109,19 @@
             required
         >
 
+        <br>
+
         <textarea
             id="description"
             placeholder="Task description"
             required
         ></textarea>
 
+        <br>
+
         <select id="assignedTo" required>
-    <option value="">Loading users...</option>
-</select>
+            <option value="">Loading users...</option>
+        </select>
 
         <select id="priority">
             <option value="Low">Low</option>
@@ -42,7 +129,12 @@
             <option value="High">High</option>
         </select>
 
+        <br>
+
+        <label for="dueDate">Due Date:</label>
         <input type="date" id="dueDate">
+
+        <br>
 
         <button type="submit">Create Task</button>
 
@@ -50,7 +142,36 @@
 
     <p id="message"></p>
 
+    <hr>
+
     <h2>Tasks</h2>
+
+    <div class="filters">
+
+        <h3>Filter Tasks</h3>
+
+        <select id="filterAssignee">
+            <option value="">All Users</option>
+        </select>
+
+        <select id="filterStatus">
+            <option value="">All Statuses</option>
+            <option value="To Do">To Do</option>
+            <option value="In Progress">In Progress</option>
+            <option value="In Review">In Review</option>
+            <option value="Done">Done</option>
+        </select>
+
+        <select id="filterPriority">
+            <option value="">All Priorities</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+        </select>
+
+        <button type="button" id="clearFilters">Clear Filters</button>
+
+    </div>
 
     <button onclick="loadTasks()">Refresh Tasks</button>
 
