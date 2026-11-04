@@ -179,64 +179,80 @@ function populateAssigneeFilter() {
 }
 
 
-// DISPLAY FILTERED TASKS
+
+// DISPLAY FILTERED TASKS ON KANBAN BOARD
 function renderTasks() {
-    const tasksDiv = document.getElementById("tasks");
+    const columns = {
+        "To Do": document.getElementById("todoColumn"),
+        "In Progress": document.getElementById("inProgressColumn"),
+        "In Review": document.getElementById("inReviewColumn"),
+        "Done": document.getElementById("doneColumn")
+    };
 
-    const selectedAssignee =
-        document.getElementById("filterAssignee").value;
+    const selectedAssignee = document.getElementById("filterAssignee").value;
+    const selectedStatus = document.getElementById("filterStatus").value;
+    const selectedPriority = document.getElementById("filterPriority").value;
 
-    const selectedStatus =
-        document.getElementById("filterStatus").value;
+    // Update dashboard using all tasks
+    document.getElementById("totalTasks").textContent = allTasks.length;
+    document.getElementById("todoTasks").textContent =
+        allTasks.filter(task => (task.status || "To Do") === "To Do").length;
+    document.getElementById("inProgressTasks").textContent =
+        allTasks.filter(task => task.status === "In Progress").length;
+    document.getElementById("completedTasks").textContent =
+        allTasks.filter(task => task.status === "Done").length;
+    document.getElementById("overdueTasks").textContent =
+        allTasks.filter(task =>
+            task.dueDate &&
+            task.status !== "Done" &&
+            getDateOnly(task.dueDate) < getTodayDate()
+        ).length;
 
-    const selectedPriority =
-        document.getElementById("filterPriority").value;
+    // Clear all columns
+    Object.values(columns).forEach(column => {
+        column.innerHTML = "";
+    });
 
+    const counts = {
+        "To Do": 0,
+        "In Progress": 0,
+        "In Review": 0,
+        "Done": 0
+    };
+
+    // Apply filters
     const filteredTasks = allTasks.filter(task => {
         const assigneeId =
             task.assignedTo && typeof task.assignedTo === "object"
                 ? task.assignedTo._id
                 : "";
 
-        const matchesAssignee =
-            !selectedAssignee || assigneeId === selectedAssignee;
-
-        const matchesStatus =
-            !selectedStatus || task.status === selectedStatus;
-
-        const matchesPriority =
-            !selectedPriority || task.priority === selectedPriority;
-
-        return matchesAssignee && matchesStatus && matchesPriority;
+        return (
+            (!selectedAssignee || assigneeId === selectedAssignee) &&
+            (!selectedStatus || task.status === selectedStatus) &&
+            (!selectedPriority || task.priority === selectedPriority)
+        );
     });
 
-    tasksDiv.innerHTML = "";
-
-    if (filteredTasks.length === 0) {
-        tasksDiv.textContent = "No matching tasks found.";
-        return;
-    }
-
+    // Create task cards
     filteredTasks.forEach(task => {
-        const taskElement = document.createElement("div");
+        const status = task.status || "To Do";
+        const column = columns[status];
+
+        if (!column) return;
+
+        counts[status]++;
 
         const assignedUser = task.assignedTo;
-
         const assignedName =
             assignedUser && typeof assignedUser === "object"
                 ? `${assignedUser.name} (${assignedUser.email})`
                 : "Unassigned";
 
-        const dueDate = task.dueDate
-            ? new Date(task.dueDate).toLocaleDateString("en-IN")
-            : "Not set";
+        const card = document.createElement("div");
+        card.className = "task-card";
 
-        const isOverdue =
-            task.dueDate &&
-            task.status !== "Done" &&
-            getDateOnly(task.dueDate) < getTodayDate();
-
-        const heading = document.createElement("h3");
+        const heading = document.createElement("h4");
         heading.textContent = task.title;
 
         const description = document.createElement("p");
@@ -245,16 +261,19 @@ function renderTasks() {
         const priority = document.createElement("p");
         priority.textContent = `Priority: ${task.priority}`;
 
-        const status = document.createElement("p");
-        status.textContent = `Status: ${task.status || "To Do"}`;
-
         const assignee = document.createElement("p");
         assignee.textContent = `Assigned To: ${assignedName}`;
 
         const date = document.createElement("p");
-        date.textContent = `Due Date: ${dueDate}`;
+        date.textContent = task.dueDate
+            ? `Due Date: ${new Date(task.dueDate).toLocaleDateString("en-IN")}`
+            : "Due Date: Not set";
 
-        if (isOverdue) {
+        if (
+            task.dueDate &&
+            status !== "Done" &&
+            getDateOnly(task.dueDate) < getTodayDate()
+        ) {
             date.textContent += " (OVERDUE)";
             date.style.color = "red";
         }
@@ -267,19 +286,29 @@ function renderTasks() {
         deleteButton.textContent = "Delete";
         deleteButton.onclick = () => deleteTask(task._id);
 
-        taskElement.append(
-            document.createElement("hr"),
+        card.append(
             heading,
             description,
             priority,
-            status,
             assignee,
             date,
             updateButton,
             deleteButton
         );
 
-        tasksDiv.appendChild(taskElement);
+        column.appendChild(card);
+    });
+
+    // Update column counts and empty messages
+    Object.keys(columns).forEach(status => {
+        const heading = columns[status].parentElement.querySelector("h3");
+        heading.textContent = `${status} (${counts[status]})`;
+
+        if (counts[status] === 0) {
+            const empty = document.createElement("p");
+            empty.textContent = "No tasks";
+            columns[status].appendChild(empty);
+        }
     });
 }
 
