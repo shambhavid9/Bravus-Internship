@@ -115,6 +115,17 @@ button:hover {
     }
 }
 
+      .search-container {
+    margin: 10px 0 20px;
+}
+
+.search-container input {
+    width: 100%;
+    max-width: 450px;
+    box-sizing: border-box;
+    padding: 12px;
+}
+
     </style>
 </head>
 
@@ -235,8 +246,26 @@ button:hover {
 
     </div>
 
-    <div class="board-header">
+   <div class="board-header">
     <h2>Task Tracking Board</h2>
+    <button onclick="loadTasks()">Refresh Tasks</button>
+</div>
+
+<div class="search-container">
+    <input
+        type="text"
+        id="taskSearch"
+        placeholder="Search tasks by title, description or assignee..."
+    >
+</div>
+
+<div class="search-container">
+    <input
+        type="text"
+        id="taskSearch"
+        placeholder="Search tasks by title, description or assignee..."
+    >
+</div>
     <button onclick="loadTasks()">Refresh Tasks</button>
 </div>
 
