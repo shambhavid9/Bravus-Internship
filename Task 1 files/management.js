@@ -271,15 +271,49 @@ function renderTasks() {
         deleteButton.textContent = "Delete";
         deleteButton.onclick = () => deleteTask(task._id);
 
-        card.append(
-            heading,
-            description,
-            priority,
-            assignee,
-            date,
-            updateButton,
-            deleteButton
-        );
+        
+const commentsHeading = document.createElement("h5");
+commentsHeading.textContent = "Progress Notes";
+
+const commentsList = document.createElement("div");
+
+if (task.comments && task.comments.length > 0) {
+    task.comments.forEach(comment => {
+        const commentItem = document.createElement("p");
+
+        const author = comment.createdBy?.name || "Unknown user";
+        const commentDate = comment.createdAt
+            ? new Date(comment.createdAt).toLocaleString("en-IN")
+            : "";
+
+        commentItem.textContent =
+            `${author} (${commentDate}): ${comment.text}`;
+
+        commentsList.appendChild(commentItem);
+    });
+} else {
+    const emptyComments = document.createElement("p");
+    emptyComments.textContent = "No progress notes yet.";
+    commentsList.appendChild(emptyComments);
+}
+
+const commentButton = document.createElement("button");
+commentButton.textContent = "Add Progress Note";
+commentButton.onclick = () => addProgressNote(task._id);
+
+card.append(
+    heading,
+    description,
+    priority,
+    assignee,
+    date,
+    commentsHeading,
+    commentsList,
+    commentButton,
+    updateButton,
+    deleteButton
+);
+
 
         column.appendChild(card);
     });
@@ -297,6 +331,45 @@ function renderTasks() {
         }
     });
 }
+
+
+async function addProgressNote(taskId) {
+    const comment = prompt("Enter your progress note:");
+
+    if (!comment || !comment.trim()) return;
+
+    try {
+        const response = await fetch(
+            `${API_URL}/tasks/${taskId}/comments`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({
+                    text: comment.trim()
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.message || "Unable to add progress note.");
+            return;
+        }
+
+        alert("Progress note added successfully!");
+
+        await loadTasks();
+
+    } catch (error) {
+        console.error("ADD COMMENT ERROR:", error);
+        alert("Unable to connect to server.");
+    }
+}
+
 
 
 // FILTER AND SEARCH EVENTS

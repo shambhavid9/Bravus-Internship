@@ -421,6 +421,7 @@ app.post(
     }
 );
 
+
 // Get tasks
 app.get(
     "/api/tasks",
@@ -432,12 +433,13 @@ app.get(
             if (req.user.role === "user") {
                 tasks = await Task.find({
                     assignedTo: req.user.id
-                }).populate("assignedTo", "name email");
+                })
+                    .populate("assignedTo", "name email")
+                    .populate("comments.createdBy", "name email");
             } else {
-                tasks = await Task.find().populate(
-                    "assignedTo",
-                    "name email"
-                );
+                tasks = await Task.find()
+                    .populate("assignedTo", "name email")
+                    .populate("comments.createdBy", "name email");
             }
 
             res.status(200).json({
@@ -669,6 +671,66 @@ app.delete(
 
             res.status(500).json({
                 message: "Failed to delete task."
+            });
+        }
+    }
+);
+
+
+// Add progress comment (Management and Admin)
+app.post(
+    "/api/tasks/:id/comments",
+    authenticateToken,
+    authorizeRoles("management", "admin"),
+    async function(req, res) {
+        const { text } = req.body;
+
+        if (typeof text !== "string" || !text.trim()) {
+            return res.status(400).json({
+                message: "Comment cannot be empty."
+            });
+        }
+
+        if (text.trim().length > 500) {
+            return res.status(400).json({
+                message: "Comment cannot exceed 500 characters."
+            });
+        }
+
+        if (!mongoose.isValidObjectId(req.params.id)) {
+            return res.status(400).json({
+                message: "Invalid task ID."
+            });
+        }
+
+        try {
+            const task = await Task.findById(req.params.id);
+
+            if (!task) {
+                return res.status(404).json({
+                    message: "Task not found."
+                });
+            }
+
+            task.comments.push({
+                text: text.trim(),
+                createdBy: req.user.id
+            });
+
+            await task.save();
+
+            await task.populate("comments.createdBy", "name email");
+
+            res.status(201).json({
+                message: "Progress note added successfully!",
+                comments: task.comments
+            });
+
+        } catch (error) {
+            console.log("COMMENT ERROR:", error);
+
+            res.status(500).json({
+                message: "Failed to add progress note."
             });
         }
     }

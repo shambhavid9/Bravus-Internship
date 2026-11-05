@@ -1,3 +1,4 @@
+
 const mongoose = require("mongoose");
 
 const taskSchema = new mongoose.Schema({
@@ -32,7 +33,25 @@ const taskSchema = new mongoose.Schema({
 
     dueDate: {
         type: Date
-    }
+    },
+
+    comments: [{
+        text: {
+            type: String,
+            required: true,
+            trim: true,
+            maxlength: 500
+        },
+        createdBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: true
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now
+        }
+    }]
 
 }, {
     timestamps: true
