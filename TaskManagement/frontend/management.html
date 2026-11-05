@@ -4,57 +4,354 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Management Portal</title>
+    <title>Management Portal | Bravus</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 25px;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            color: #222;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        button, input, select, textarea {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 15px;
+            background: #222;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        .logout {
+            background: #c0392b;
+        }
+
+        .section {
+            background: white;
+            padding: 22px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .stat h3 {
+            margin: 0 0 10px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .stat p {
+            font-size: 27px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+        }
+
+        textarea {
+            min-height: 45px;
+            resize: vertical;
+        }
+
+        .form-submit {
+            margin-top: 15px;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px;
+            margin: 15px 0;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(230px, 1fr));
+            gap: 15px;
+            overflow-x: auto;
+            align-items: start;
+        }
+
+        .kanban-column {
+            background: #eef1f5;
+            padding: 12px;
+            border-radius: 9px;
+            min-height: 220px;
+        }
+
+        .kanban-column h3 {
+            margin: 5px 0 15px;
+            font-size: 16px;
+        }
+
+        .task-card {
+            background: white;
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+        }
+
+        .task-card h4 {
+            margin: 0 0 8px;
+        }
+
+        .task-card p {
+            font-size: 13px;
+            line-height: 1.5;
+            color: #555;
+            overflow-wrap: anywhere;
+        }
+
+        .task-meta {
+            font-size: 12px;
+            color: #666;
+            margin: 7px 0;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .task-actions button {
+            font-size: 12px;
+            padding: 8px 10px;
+        }
+
+        .edit-btn {
+            background: #2563a6;
+        }
+
+        .delete-btn {
+            background: #c0392b;
+        }
+
+        .empty {
+            color: #777;
+            font-size: 13px;
+            text-align: center;
+            padding: 20px 5px;
+        }
+
+        .overdue {
+            color: #c0392b;
+            font-weight: bold;
+        }
+
+        #message {
+            margin-top: 12px;
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 14px;
+            }
+
+            .board {
+                grid-template-columns: repeat(4, minmax(250px, 1fr));
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-    <h1>Management Portal</h1>
-    <p>Welcome, Management!</p>
+    <header>
+        <div>
+            <h1>Management Portal</h1>
+            <p>Welcome, Management!</p>
+        </div>
 
-    <button onclick="logout()">Logout</button>
+        <button class="logout" onclick="logout()">Logout</button>
+    </header>
 
-    <hr>
+    <section class="dashboard">
+        <div class="stat">
+            <h3>Total Tasks</h3>
+            <p id="totalTasks">0</p>
+        </div>
 
-    <h2>Create Task</h2>
+        <div class="stat">
+            <h3>To Do</h3>
+            <p id="todoTasks">0</p>
+        </div>
 
-    <form id="taskForm">
+        <div class="stat">
+            <h3>In Progress</h3>
+            <p id="progressTasks">0</p>
+        </div>
 
-        <input
-            type="text"
-            id="title"
-            placeholder="Task title"
-            required
-        >
+        <div class="stat">
+            <h3>In Review</h3>
+            <p id="reviewTasks">0</p>
+        </div>
 
-        <textarea
-            id="description"
-            placeholder="Task description"
-            required
-        ></textarea>
+        <div class="stat">
+            <h3>Completed</h3>
+            <p id="completedTasks">0</p>
+        </div>
 
-        <select id="assignedTo" required>
-    <option value="">Loading users...</option>
-</select>
+        <div class="stat">
+            <h3>Overdue</h3>
+            <p id="overdueTasks">0</p>
+        </div>
+    </section>
 
-        <select id="priority">
-            <option value="Low">Low</option>
-            <option value="Medium" selected>Medium</option>
-            <option value="High">High</option>
-        </select>
+    <section class="section">
+        <h2>Create Task</h2>
 
-        <input type="date" id="dueDate">
+        <form id="taskForm">
+            <div class="form-grid">
 
-        <button type="submit">Create Task</button>
+                <input
+                    type="text"
+                    id="title"
+                    placeholder="Task title"
+                    required
+                >
 
-    </form>
+                <select id="assignedTo" required>
+                    <option value="">Loading users...</option>
+                </select>
 
-    <p id="message"></p>
+                <select id="priority">
+                    <option value="Low">Low</option>
+                    <option value="Medium" selected>Medium</option>
+                    <option value="High">High</option>
+                </select>
 
-    <h2>Tasks</h2>
+                <input type="date" id="dueDate">
 
-    <button onclick="loadTasks()">Refresh Tasks</button>
+                <textarea
+                    id="description"
+                    placeholder="Task description"
+                    required
+                ></textarea>
 
-    <div id="tasks"></div>
+            </div>
+
+            <button class="form-submit" type="submit">
+                Create Task
+            </button>
+        </form>
+
+        <p id="message"></p>
+    </section>
+
+    <section class="section">
+        <h2>Task Management Board</h2>
+
+        <button onclick="loadTasks()">Refresh Tasks</button>
+
+        <div class="filters">
+
+            <input
+                type="text"
+                id="taskSearch"
+                placeholder="Search tasks..."
+            >
+
+            <select id="filterAssignee">
+                <option value="">All Users</option>
+            </select>
+
+            <select id="filterStatus">
+                <option value="">All Statuses</option>
+                <option value="To Do">To Do</option>
+                <option value="In Progress">In Progress</option>
+                <option value="In Review">In Review</option>
+                <option value="Done">Done</option>
+            </select>
+
+            <select id="filterPriority">
+                <option value="">All Priorities</option>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+            </select>
+
+            <button type="button" id="clearFilters">
+                Clear Filters
+            </button>
+
+        </div>
+
+        <div id="taskBoard" class="board">
+
+            <div class="kanban-column">
+                <h3>To Do (0)</h3>
+                <div id="todoColumn"></div>
+            </div>
+
+            <div class="kanban-column">
+                <h3>In Progress (0)</h3>
+                <div id="progressColumn"></div>
+            </div>
+
+            <div class="kanban-column">
+                <h3>In Review (0)</h3>
+                <div id="reviewColumn"></div>
+            </div>
+
+            <div class="kanban-column">
+                <h3>Done (0)</h3>
+                <div id="doneColumn"></div>
+            </div>
+
+        </div>
+    </section>
 
     <script src="management.js"></script>
 
