@@ -7,125 +7,123 @@
     <title>Management Portal</title>
 
     <style>
-        
-body {
-    font-family: Arial, sans-serif;
-    margin: 30px;
-    background: #f4f6f9;
-    color: #222;
-}
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background: #f4f6f9;
+            color: #222;
+        }
 
-input, textarea, select, button {
-    padding: 10px;
-    margin: 6px 0;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
+        input, textarea, select, button {
+            padding: 10px;
+            margin: 6px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
 
-button {
-    cursor: pointer;
-    background: #222;
-    color: white;
-    border: none;
-}
+        button {
+            cursor: pointer;
+            background: #222;
+            color: white;
+            border: none;
+        }
 
-button:hover {
-    background: #444;
-}
+        button:hover {
+            background: #444;
+        }
 
-.dashboard {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin: 20px 0;
-}
+        .dashboard {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
 
-.card {
-    background: white;
-    padding: 20px;
-    min-width: 130px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-}
+        .card {
+            background: white;
+            padding: 20px;
+            min-width: 130px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
 
-.card h3 {
-    margin-top: 0;
-}
+        .card h3 {
+            margin-top: 0;
+        }
 
-.filters {
-    background: white;
-    padding: 15px;
-    margin: 15px 0;
-    border-radius: 8px;
-}
+        .filters {
+            background: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
 
-.board-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 25px 0 15px;
-}
+        .board-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 25px 0 15px;
+        }
 
-.board {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(220px, 1fr));
-    gap: 15px;
-    align-items: start;
-    overflow-x: auto;
-}
+        .board {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(220px, 1fr));
+            gap: 15px;
+            align-items: start;
+            overflow-x: auto;
+        }
 
-.board-column {
-    background: #e9edf3;
-    padding: 15px;
-    border-radius: 10px;
-    min-height: 250px;
-}
+        .board-column {
+            background: #e9edf3;
+            padding: 15px;
+            border-radius: 10px;
+            min-height: 250px;
+        }
 
-.board-column h3 {
-    margin-top: 0;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #ccc;
-}
+        .board-column h3 {
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ccc;
+        }
 
-.task-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
 
-.task-card {
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
+        .task-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
 
-.task-card h4 {
-    margin-top: 0;
-}
+        .task-card h4 {
+            margin-top: 0;
+        }
 
-.task-card button {
-    margin-right: 6px;
-}
+        .task-card button {
+            margin-right: 6px;
+        }
 
-@media (max-width: 900px) {
-    .board {
-        grid-template-columns: repeat(4, 250px);
-    }
-}
+        .search-container {
+            margin: 10px 0 20px;
+        }
 
-      .search-container {
-    margin: 10px 0 20px;
-}
+        .search-container input {
+            width: 100%;
+            max-width: 450px;
+            box-sizing: border-box;
+            padding: 12px;
+        }
 
-.search-container input {
-    width: 100%;
-    max-width: 450px;
-    box-sizing: border-box;
-    padding: 12px;
-}
-
+        @media (max-width: 900px) {
+            .board {
+                grid-template-columns: repeat(4, 250px);
+            }
+        }
     </style>
 </head>
 
@@ -246,52 +244,45 @@ button:hover {
 
     </div>
 
-   <div class="board-header">
-    <h2>Task Tracking Board</h2>
-    <button onclick="loadTasks()">Refresh Tasks</button>
-</div>
-
-<div class="search-container">
-    <input
-        type="text"
-        id="taskSearch"
-        placeholder="Search tasks by title, description or assignee..."
-    >
-</div>
-
-<div class="search-container">
-    <input
-        type="text"
-        id="taskSearch"
-        placeholder="Search tasks by title, description or assignee..."
-    >
-</div>
-    <button onclick="loadTasks()">Refresh Tasks</button>
-</div>
-
-<div class="board" id="taskBoard">
-
-    <div class="board-column">
-        <h3>To Do</h3>
-        <div id="todoColumn" class="task-list"></div>
+    <!-- Task Tracking Board -->
+    <div class="board-header">
+        <h2>Task Tracking Board</h2>
+        <button onclick="loadTasks()">Refresh Tasks</button>
     </div>
 
-    <div class="board-column">
-        <h3>In Progress</h3>
-        <div id="inProgressColumn" class="task-list"></div>
+    <!-- Single Search Box -->
+    <div class="search-container">
+        <input
+            type="text"
+            id="taskSearch"
+            placeholder="Search tasks by title, description or assignee..."
+        >
     </div>
 
-    <div class="board-column">
-        <h3>In Review</h3>
-        <div id="inReviewColumn" class="task-list"></div>
-    </div>
+    <!-- Kanban Board -->
+    <div class="board" id="taskBoard">
 
-    <div class="board-column">
-        <h3>Done</h3>
-        <div id="doneColumn" class="task-list"></div>
-    </div>
+        <div class="board-column">
+            <h3>To Do</h3>
+            <div id="todoColumn" class="task-list"></div>
+        </div>
 
-</div>
+        <div class="board-column">
+            <h3>In Progress</h3>
+            <div id="inProgressColumn" class="task-list"></div>
+        </div>
+
+        <div class="board-column">
+            <h3>In Review</h3>
+            <div id="inReviewColumn" class="task-list"></div>
+        </div>
+
+        <div class="board-column">
+            <h3>Done</h3>
+            <div id="doneColumn" class="task-list"></div>
+        </div>
+
+    </div>
 
     <script src="management.js"></script>
 
