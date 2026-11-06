@@ -1,8 +1,44 @@
-
+const API_URL = "https://bravus-internship-backend.vercel.app/api";
 const token = localStorage.getItem("token");
 
-if (!token) {
-    window.location.href = "login.html";
+async function verifyAdminAccess() {
+    if (!token) {
+        window.location.href = "login.html";
+        return false;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/profile`, {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        if (!response.ok) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            window.location.href = "login.html";
+            return false;
+        }
+
+        const data = await response.json();
+
+        if (data.user.role !== "admin") {
+            if (data.user.role === "user") {
+                window.location.href = "user.html";
+            } else {
+                window.location.href = "management.html";
+            }
+            return false;
+        }
+
+        return true;
+
+    } catch (error) {
+        console.error("ADMIN ACCESS VERIFICATION ERROR:", error);
+        document.body.innerHTML = "<h2>Unable to verify access. Please try again.</h2>";
+        return false;
+    }
 }
 
 async function loadUsers() {
@@ -144,3 +180,11 @@ function logout() {
     localStorage.removeItem("user");
     window.location.href = "login.html";
 }
+
+// VERIFY ADMIN ACCESS AND LOAD DATA
+verifyAdminAccess().then(function(hasAccess) {
+    if (hasAccess) {
+        loadUsers();
+        loadTasks();
+    }
+});

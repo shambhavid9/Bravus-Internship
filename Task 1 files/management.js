@@ -565,6 +565,44 @@ function logout() {
 }
 
 
-// INITIAL LOAD
-loadUsers();
-loadTasks();
+// VERIFY ROLE AND INITIAL LOAD
+async function verifyManagementAccess() {
+    try {
+        const response = await fetch(`${API_URL}/profile`, {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        if (!response.ok) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            window.location.href = "login.html";
+            return;
+        }
+
+        const data = await response.json();
+        const role = data.user.role;
+
+        if (role === "user") {
+            window.location.href = "user.html";
+            return;
+        }
+
+        if (role !== "management" && role !== "admin") {
+            window.location.href = "login.html";
+            return;
+        }
+
+        loadUsers();
+        loadTasks();
+
+    } catch (error) {
+        console.error("ACCESS VERIFICATION ERROR:", error);
+        document.body.innerHTML = "<h2>Unable to verify access. Please try again.</h2>";
+    }
+}
+
+if (token) {
+    verifyManagementAccess();
+}
