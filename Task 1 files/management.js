@@ -296,6 +296,31 @@ if (task.comments && task.comments.length > 0) {
     emptyComments.textContent = "No progress notes yet.";
     commentsList.appendChild(emptyComments);
 }
+const activityHeading = document.createElement("h5");
+activityHeading.textContent = "Activity History";
+
+const activityList = document.createElement("div");
+
+if (task.activity && task.activity.length > 0) {
+    task.activity.forEach(entry => {
+        const activityItem = document.createElement("p");
+
+        const author = entry.changedBy?.name || "Unknown user";
+
+        const activityDate = entry.changedAt
+            ? new Date(entry.changedAt).toLocaleString("en-IN")
+            : "";
+
+        activityItem.textContent =
+            `${author} changed status from ${entry.fromStatus} to ${entry.toStatus} (${activityDate})`;
+
+        activityList.appendChild(activityItem);
+    });
+} else {
+    const emptyActivity = document.createElement("p");
+    emptyActivity.textContent = "No status changes recorded yet.";
+    activityList.appendChild(emptyActivity);
+}
 
 const commentButton = document.createElement("button");
 commentButton.textContent = "Add Progress Note";
@@ -310,6 +335,8 @@ card.append(
     commentsHeading,
     commentsList,
     commentButton,
+    activityHeading,
+    activityList,
     updateButton,
     deleteButton
 );

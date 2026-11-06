@@ -435,11 +435,13 @@ app.get(
                     assignedTo: req.user.id
                 })
                     .populate("assignedTo", "name email")
-                    .populate("comments.createdBy", "name email");
+                    .populate("comments.createdBy", "name email")
+                    .populate("activity.changedBy", "name email");
             } else {
                 tasks = await Task.find()
                     .populate("assignedTo", "name email")
-                    .populate("comments.createdBy", "name email");
+                    .populate("comments.createdBy", "name email")
+                    .populate("activity.changedBy", "name email");
             }
 
             res.status(200).json({
@@ -616,9 +618,15 @@ app.put(
                 task.priority = priority;
             }
 
-            if (status !== undefined) {
-                task.status = status;
-            }
+           if (status !== undefined && status !== task.status) {
+    task.activity.push({
+        fromStatus: task.status,
+        toStatus: status,
+        changedBy: req.user.id
+    });
+
+    task.status = status;
+}
 
             if (dueDate !== undefined) {
                 task.dueDate = dueDate === "" ? null : dueDate;

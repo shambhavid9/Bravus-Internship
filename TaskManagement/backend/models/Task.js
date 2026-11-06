@@ -1,4 +1,3 @@
-
 const mongoose = require("mongoose");
 
 const taskSchema = new mongoose.Schema({
@@ -48,6 +47,26 @@ const taskSchema = new mongoose.Schema({
             required: true
         },
         createdAt: {
+            type: Date,
+            default: Date.now
+        }
+    }],
+
+    activity: [{
+        fromStatus: {
+            type: String,
+            required: true
+        },
+        toStatus: {
+            type: String,
+            required: true
+        },
+        changedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: true
+        },
+        changedAt: {
             type: Date,
             default: Date.now
         }
