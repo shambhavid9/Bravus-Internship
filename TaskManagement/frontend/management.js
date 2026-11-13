@@ -366,6 +366,7 @@ document.getElementById("clearFilters")
     });
 
 // UPDATE TASK
+// UPDATE TASK
 async function updateTask(taskId) {
     const newPriority = prompt(
         "Enter priority: Low, Medium or High"
@@ -378,6 +379,10 @@ async function updateTask(taskId) {
     );
 
     if (!newStatus) return;
+
+    const newDueDate = prompt(
+        "Enter due date (YYYY-MM-DD), or leave blank to remove it:"
+    );
 
     const priority = newPriority.trim().toLowerCase()
         .replace(/\b\w/g, char => char.toUpperCase());
@@ -395,6 +400,14 @@ async function updateTask(taskId) {
         return;
     }
 
+    if (
+        newDueDate &&
+        isNaN(Date.parse(newDueDate))
+    ) {
+        alert("Invalid due date.");
+        return;
+    }
+
     try {
         const response = await fetch(`${API_URL}/tasks/${taskId}`, {
             method: "PUT",
@@ -402,7 +415,11 @@ async function updateTask(taskId) {
                 "Content-Type": "application/json",
                 "Authorization": "Bearer " + token
             },
-            body: JSON.stringify({ priority, status })
+            body: JSON.stringify({
+                priority,
+                status,
+                dueDate: newDueDate || ""
+            })
         });
 
         const data = await response.json();
