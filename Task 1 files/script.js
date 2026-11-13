@@ -17,7 +17,7 @@ form.addEventListener("submit", function(event) {
     submitBtn.disabled = true;
     submitBtn.innerText = "Sending...";
 
-    fetch("https://bravus-internship-backend.vercel.app/api/enquiries", {
+    fetch("http://127.0.0.1:4000/api/enquiries", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

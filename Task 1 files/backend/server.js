@@ -3,6 +3,13 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const dns = require("dns");
+
+// Use Google DNS locally to resolve MongoDB SRV records
+if (process.env.NODE_ENV !== "production") {
+    dns.setServers(["8.8.8.8", "8.8.4.4"]);
+}
+
 const Enquiry = require("./models/Enquiry");
 
 const app = express();
@@ -16,7 +23,10 @@ mongoose.connect(process.env.MONGODB_URI)
     });
 
 app.use(cors({
-    origin: "http://127.0.0.1:5500"
+    origin: [
+        "http://127.0.0.1:5500",
+        "http://127.0.0.1:5501"
+    ]
 }));
 
 app.use(express.json());
@@ -73,6 +83,6 @@ app.post("/api/enquiries", async function(req, res) {
     }
 });
 
-app.listen(3001, function() {
-    console.log("Server is running on port 3001");
+app.listen(4000, function() {
+    console.log("Server is running on port 4000");
 });
