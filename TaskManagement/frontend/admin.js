@@ -1,9 +1,24 @@
 const token = localStorage.getItem("token");
 
-if (!token) {
-    window.location.href = "login.html";
+let currentUser = null;
+
+try {
+    currentUser = JSON.parse(localStorage.getItem("user"));
+} catch (error) {
+    currentUser = null;
 }
 
+if (!token || !currentUser) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.href = "login.html";
+} else if (currentUser.role !== "admin") {
+    if (currentUser.role === "management") {
+        window.location.href = "management.html";
+    } else {
+        window.location.href = "user.html";
+    }
+}
 
 async function loadUsers() {
 
