@@ -47,7 +47,9 @@ async function connectDB() {
 }
 
 // Ensure database is connected before API requests
-app.use(async function(req, res, next) {
+// Skip database connection during automated tests
+if (process.env.NODE_ENV !== "test") {
+    app.use(async function(req, res, next) {
     try {
         await connectDB();
         next();
@@ -59,6 +61,7 @@ app.use(async function(req, res, next) {
         });
     }
 });
+}
 
 // Root route
 app.get("/", function(req, res) {
