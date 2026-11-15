@@ -4,12 +4,16 @@
   "description": "Backend API for Bravvus Solutions website enquiries",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "node --test"
   },
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^18.0.9",
     "express": "^5.3.0",
     "mongoose": "^9.11.3"
+  },
+  "devDependencies": {
+    "supertest": "^7.3.2"
   }
 }
