@@ -150,6 +150,37 @@ test("PUT /api/tasks/:id should reject normal user", async () => {
     assert.strictEqual(response.status, 403);
 });
 
+
+test("PATCH status should reject invalid task ID", async () => {
+    const response = await request(app)
+        .patch("/api/tasks/invalid-id/status")
+        .set("Authorization", `Bearer ${generateToken("user")}`)
+        .send({ status: "Done" });
+
+    assert.strictEqual(response.status, 400);
+});
+
+test("PATCH status should reject invalid status", async () => {
+    const response = await request(app)
+        .patch("/api/tasks/64b000000000000000000001/status")
+        .set("Authorization", `Bearer ${generateToken("user")}`)
+        .send({ status: "Completed" });
+
+    assert.strictEqual(response.status, 400);
+});
+
+test("PATCH status should reject additional fields", async () => {
+    const response = await request(app)
+        .patch("/api/tasks/64b000000000000000000001/status")
+        .set("Authorization", `Bearer ${generateToken("user")}`)
+        .send({
+            status: "Done",
+            priority: "High"
+        });
+
+    assert.strictEqual(response.status, 400);
+});
+
 // Test 14: User should not delete tasks
 test("DELETE /api/tasks/:id should reject normal user", async () => {
     const response = await request(app)

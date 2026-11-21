@@ -651,6 +651,91 @@ app.put(
     }
 );
 
+
+// Update task status (Assigned User only)
+app.patch(
+    "/api/tasks/:id/status",
+    authenticateToken,
+    authorizeRoles("user"),
+    async function(req, res) {
+        const validStatuses = [
+            "To Do",
+            "In Progress",
+            "In Review",
+            "Done"
+        ];
+
+        if (!mongoose.isValidObjectId(req.params.id)) {
+            return res.status(400).json({
+                message: "Invalid task ID."
+            });
+        }
+
+        // Accept only the status field
+        if (
+            !req.body ||
+            Object.keys(req.body).length !== 1 ||
+            !Object.prototype.hasOwnProperty.call(req.body, "status")
+        ) {
+            return res.status(400).json({
+                message: "Only the status field can be updated."
+            });
+        }
+
+        const { status } = req.body;
+
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({
+                message: "Invalid status. Use To Do, In Progress, In Review or Done."
+            });
+        }
+
+        try {
+            const task = await Task.findById(req.params.id);
+
+            if (!task) {
+                return res.status(404).json({
+                    message: "Task not found."
+                });
+            }
+
+            // Users can update only tasks assigned to them
+            if (task.assignedTo.toString() !== req.user.id) {
+                return res.status(403).json({
+                    message: "Access denied. You can only update your assigned tasks."
+                });
+            }
+
+            // Record activity only when the status actually changes
+            if (status !== task.status) {
+                task.activity.push({
+                    fromStatus: task.status,
+                    toStatus: status,
+                    changedBy: req.user.id
+                });
+
+                task.status = status;
+            }
+
+            await task.save();
+
+            await task.populate("activity.changedBy", "name email");
+
+            return res.status(200).json({
+                message: "Task status updated successfully!",
+                task: task
+            });
+
+        } catch (error) {
+            console.log("TASK STATUS UPDATE ERROR:", error);
+
+            return res.status(500).json({
+                message: "Failed to update task status."
+            });
+        }
+    }
+);
+
 // Delete task (Management and Admin)
 app.delete(
     "/api/tasks/:id",

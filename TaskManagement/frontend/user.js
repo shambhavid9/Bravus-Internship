@@ -5,19 +5,24 @@ if (!token) {
     window.location.href = "login.html";
 }
 
+const API_URL = "https://bravus-internship-backend.vercel.app/api";
+const validStatuses = [
+    "To Do",
+    "In Progress",
+    "In Review",
+    "Done"
+];
+
 async function loadTasks() {
     const tasksDiv = document.getElementById("tasks");
 
     try {
-        const response = await fetch(
-            "https://bravus-internship-backend.vercel.app/api/tasks",
-            {
-                method: "GET",
-                headers: {
-                    "Authorization": "Bearer " + token
-                }
+        const response = await fetch(`${API_URL}/tasks`, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
             }
-        );
+        });
 
         const data = await response.json();
         tasksDiv.innerHTML = "";
@@ -48,6 +53,8 @@ async function loadTasks() {
                 <p><strong>Status:</strong> ${escapeHTML(task.status || "To Do")}</p>
                 <p><strong>Due Date:</strong> ${escapeHTML(dueDate)}</p>
 
+                <div class="status-controls"></div>
+
                 <h4>Progress Notes</h4>
                 <div class="comments"></div>
 
@@ -59,11 +66,47 @@ async function loadTasks() {
             taskElement.querySelector(".description").textContent =
                 task.description;
 
+            // Status update controls
+            const controlsDiv =
+                taskElement.querySelector(".status-controls");
+
+            const statusLabel = document.createElement("label");
+            statusLabel.textContent = "Update Status: ";
+
+            const statusSelect = document.createElement("select");
+
+            validStatuses.forEach(status => {
+                const option = document.createElement("option");
+                option.value = status;
+                option.textContent = status;
+                option.selected = status === (task.status || "To Do");
+                statusSelect.appendChild(option);
+            });
+
+            const updateButton = document.createElement("button");
+            updateButton.textContent = "Update Status";
+
+            updateButton.addEventListener("click", () => {
+                updateTaskStatus(
+                    task._id,
+                    statusSelect.value,
+                    updateButton
+                );
+            });
+
+            controlsDiv.append(
+                statusLabel,
+                statusSelect,
+                updateButton
+            );
+
+            // Progress notes
             const commentsDiv = taskElement.querySelector(".comments");
 
             if (task.comments && task.comments.length > 0) {
                 task.comments.forEach(comment => {
                     const note = document.createElement("p");
+
                     const author =
                         typeof comment.createdBy === "object"
                             ? comment.createdBy?.name || "User"
@@ -78,6 +121,7 @@ async function loadTasks() {
                 commentsDiv.textContent = "No progress notes yet.";
             }
 
+            // Activity history
             const activityDiv = taskElement.querySelector(".activity");
 
             if (task.activity && task.activity.length > 0) {
@@ -105,6 +149,43 @@ async function loadTasks() {
     } catch (error) {
         console.error("TASK LOAD ERROR:", error);
         tasksDiv.textContent = "Unable to connect to server.";
+    }
+}
+
+// Update task status through the user-only API
+async function updateTaskStatus(taskId, status, button) {
+    button.disabled = true;
+    button.textContent = "Updating...";
+
+    try {
+        const response = await fetch(
+            `${API_URL}/tasks/${encodeURIComponent(taskId)}/status`,
+            {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({ status })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.message || "Failed to update task status.");
+            return;
+        }
+
+        alert("Task status updated successfully!");
+        await loadTasks();
+
+    } catch (error) {
+        console.error("STATUS UPDATE ERROR:", error);
+        alert("Unable to connect to server.");
+    } finally {
+        button.disabled = false;
+        button.textContent = "Update Status";
     }
 }
 

@@ -916,3 +916,68 @@ test("Management should record task status change activity", async () => {
         managementUser._id.toString()
     );
 });
+
+test("Assigned user should successfully update their task status", async () => {
+    const task = await Task.create({
+        title: "User Status Update Test",
+        description: "Testing assigned user status update",
+        assignedTo: assignedUser._id,
+        createdBy: managementUser._id,
+        priority: "Medium",
+        status: "To Do"
+    });
+
+    createdTaskIds.push(task._id);
+
+    const userToken = generateToken(assignedUser);
+
+    const response = await request(app)
+        .patch(`/api/tasks/${task._id}/status`)
+        .set("Authorization", `Bearer ${userToken}`)
+        .send({
+            status: "In Progress"
+        });
+
+    assert.strictEqual(response.status, 200);
+    assert.strictEqual(response.body.task.status, "In Progress");
+    assert.strictEqual(response.body.task.activity.length, 1);
+
+    assert.strictEqual(
+        response.body.task.activity[0].fromStatus,
+        "To Do"
+    );
+
+    assert.strictEqual(
+        response.body.task.activity[0].toStatus,
+        "In Progress"
+    );
+
+    assert.strictEqual(
+        response.body.task.activity[0].changedBy._id.toString(),
+        assignedUser._id.toString()
+    );
+});
+
+test("User should not update another user's task status", async () => {
+    const task = await Task.create({
+        title: "Unauthorized Status Update Test",
+        description: "Testing task ownership restriction",
+        assignedTo: assignedUser._id,
+        createdBy: managementUser._id,
+        priority: "Medium",
+        status: "To Do"
+    });
+
+    createdTaskIds.push(task._id);
+
+    const otherUserToken = generateToken(otherUser);
+
+    const response = await request(app)
+        .patch(`/api/tasks/${task._id}/status`)
+        .set("Authorization", `Bearer ${otherUserToken}`)
+        .send({
+            status: "Done"
+        });
+
+    assert.strictEqual(response.status, 403);
+});
