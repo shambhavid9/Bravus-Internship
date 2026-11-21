@@ -7,202 +7,298 @@
     <title>Management Portal | Bravus</title>
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
+        
+* {
+    box-sizing: border-box;
+}
 
-        body {
-            margin: 0;
-            padding: 25px;
-            font-family: Arial, sans-serif;
-            background: #f4f6f9;
-            color: #222;
-        }
+body {
+    margin: 0;
+    padding: 25px;
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    color: #222;
+}
 
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-bottom: 25px;
-        }
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+}
 
-        button, input, select, textarea {
-            font: inherit;
-        }
+header h1 {
+    margin-bottom: 5px;
+}
 
-        button {
-            cursor: pointer;
-            border: none;
-            border-radius: 6px;
-            padding: 10px 15px;
-            background: #222;
-            color: white;
-        }
+header p {
+    color: #666;
+    margin-top: 0;
+}
 
-        button:hover {
-            opacity: 0.85;
-        }
+button, input, select, textarea {
+    font: inherit;
+}
 
-        .logout {
-            background: #c0392b;
-        }
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 15px;
+    background: #222;
+    color: white;
+    transition: opacity 0.2s;
+}
 
-        .section {
-            background: white;
-            padding: 22px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
+button:hover {
+    opacity: 0.85;
+}
 
-        .dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
 
-        .stat {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
+.logout, .delete-btn {
+    background: #c0392b;
+}
 
-        .stat h3 {
-            margin: 0 0 10px;
-            color: #666;
-            font-size: 14px;
-        }
+.section {
+    background: white;
+    padding: 22px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
 
-        .stat p {
-            font-size: 27px;
-            font-weight: bold;
-            margin: 0;
-        }
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 12px;
-        }
+.stat {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
 
-        input, textarea, select {
-            width: 100%;
-            padding: 11px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            background: white;
-        }
+.stat h3 {
+    margin: 0 0 10px;
+    color: #666;
+    font-size: 14px;
+}
 
-        textarea {
-            min-height: 45px;
-            resize: vertical;
-        }
+.stat p {
+    font-size: 27px;
+    font-weight: bold;
+    margin: 0;
+}
 
-        .form-submit {
-            margin-top: 15px;
-        }
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+}
 
-        .filters {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-            gap: 12px;
-            margin: 15px 0;
-        }
+input, textarea, select {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+}
 
-        .board {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(230px, 1fr));
-            gap: 15px;
-            overflow-x: auto;
-            align-items: start;
-        }
+textarea {
+    min-height: 45px;
+    resize: vertical;
+}
 
-        .kanban-column {
-            background: #eef1f5;
-            padding: 12px;
-            border-radius: 9px;
-            min-height: 220px;
-        }
+.form-submit {
+    margin-top: 15px;
+}
 
-        .kanban-column h3 {
-            margin: 5px 0 15px;
-            font-size: 16px;
-        }
+.filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 12px;
+    margin: 15px 0;
+}
 
-        .task-card {
-            background: white;
-            border-radius: 8px;
-            padding: 14px;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.06);
-        }
+.board {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(230px, 1fr));
+    gap: 15px;
+    overflow-x: auto;
+    align-items: start;
+}
 
-        .task-card h4 {
-            margin: 0 0 8px;
-        }
+.kanban-column {
+    background: #eef1f5;
+    padding: 12px;
+    border-radius: 9px;
+    min-height: 220px;
+}
 
-        .task-card p {
-            font-size: 13px;
-            line-height: 1.5;
-            color: #555;
-            overflow-wrap: anywhere;
-        }
+.kanban-column h3 {
+    margin: 5px 0 15px;
+    font-size: 16px;
+}
 
-        .task-meta {
-            font-size: 12px;
-            color: #666;
-            margin: 7px 0;
-        }
+/* TASK CARD */
+.task-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 13px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    overflow: hidden;
+}
 
-        .task-actions {
-            display: flex;
-            gap: 7px;
-            flex-wrap: wrap;
-            margin-top: 12px;
-        }
+.task-card h4 {
+    margin: 0 0 9px;
+    font-size: 15px;
+    color: #202a35;
+    overflow-wrap: anywhere;
+}
 
-        .task-actions button {
-            font-size: 12px;
-            padding: 8px 10px;
-        }
+.task-card > p {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #555;
+    margin: 0 0 12px;
+    overflow-wrap: anywhere;
+}
 
-        .edit-btn {
-            background: #2563a6;
-        }
+.task-meta {
+    font-size: 12px;
+    color: #666;
+    margin: 7px 0;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
 
-        .delete-btn {
-            background: #c0392b;
-        }
+/* PROGRESS NOTES */
+.progress-section {
+    margin-top: 14px;
+    padding: 11px;
+    background: #f8fafc;
+    border: 1px solid #e5eaf0;
+    border-radius: 8px;
+}
 
-        .empty {
-            color: #777;
-            font-size: 13px;
-            text-align: center;
-            padding: 20px 5px;
-        }
+.progress-section h5 {
+    margin: 0 0 9px;
+    font-size: 13px;
+    color: #293747;
+}
 
-        .overdue {
-            color: #c0392b;
-            font-weight: bold;
-        }
+.progress-section p {
+    font-size: 12px;
+    line-height: 1.5;
+    margin: 7px 0 0;
+    overflow-wrap: anywhere;
+}
 
-        #message {
-            margin-top: 12px;
-        }
+.progress-section .no-comments {
+    color: #9299a3;
+    font-style: italic;
+}
 
-        @media (max-width: 700px) {
-            body {
-                padding: 14px;
-            }
+.progress-section .progress-comment {
+    padding: 8px;
+    background: white;
+    border: 1px solid #e8edf2;
+    border-radius: 6px;
+    color: #505b67;
+}
 
-            .board {
-                grid-template-columns: repeat(4, minmax(250px, 1fr));
-            }
-        }
+/* COMMENT INPUT */
+.progress-input {
+    display: block;
+    width: 100%;
+    min-height: 65px;
+    margin-top: 9px;
+    padding: 9px;
+    font-size: 12px;
+    line-height: 1.4;
+    border: 1px solid #dce2e8;
+    border-radius: 7px;
+    background: #fff;
+    resize: vertical;
+}
+
+.progress-input:focus {
+    outline: none;
+    border-color: #287a65;
+    box-shadow: 0 0 0 2px rgba(40,122,101,0.1);
+}
+
+/* ADD COMMENT BUTTON */
+.progress-btn {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+    padding: 9px 12px;
+    background: #287a65;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* TASK ACTIONS */
+.task-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 13px;
+    padding-top: 11px;
+    border-top: 1px solid #edf0f3;
+}
+
+.task-actions button {
+    flex: 1;
+    font-size: 12px;
+    padding: 9px 6px;
+}
+
+.edit-btn {
+    background: #2563a6;
+}
+
+.empty {
+    color: #777;
+    font-size: 13px;
+    text-align: center;
+    padding: 20px 5px;
+}
+
+.overdue {
+    color: #c0392b;
+    font-weight: bold;
+}
+
+#message {
+    margin-top: 12px;
+}
+
+@media (max-width: 700px) {
+    body {
+        padding: 14px;
+    }
+
+    .section {
+        padding: 15px;
+    }
+
+    .board {
+        grid-template-columns: repeat(4, minmax(250px, 1fr));
+    }
+}
+
     </style>
 </head>
 

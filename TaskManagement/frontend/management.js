@@ -48,7 +48,6 @@ document.getElementById("taskForm").addEventListener("submit", async function(ev
 
     } catch (error) {
         console.error("CREATE TASK ERROR:", error);
-
         document.getElementById("message").textContent =
             "Unable to connect to server.";
     }
@@ -78,7 +77,6 @@ async function loadTasks() {
 
     } catch (error) {
         console.error("LOAD TASKS ERROR:", error);
-
         document.getElementById("taskBoard").textContent =
             "Unable to connect to server.";
     }
@@ -294,6 +292,91 @@ function renderTasks() {
             ? `Due: ${formatDate(dueDate)}${isOverdue ? " (Overdue)" : ""}`
             : "Due date: Not set";
 
+        // PROGRESS NOTES SECTION
+        const progressSection = document.createElement("div");
+        progressSection.className = "progress-section";
+
+        const progressHeading = document.createElement("h5");
+        progressHeading.textContent = "Progress Notes";
+        progressSection.appendChild(progressHeading);
+
+        const comments = task.comments || [];
+
+        if (comments.length === 0) {
+            const noComments = document.createElement("p");
+            noComments.className = "no-comments";
+            noComments.textContent = "No progress notes yet.";
+            progressSection.appendChild(noComments);
+
+        } else {
+            comments.forEach(comment => {
+                const commentItem = document.createElement("p");
+                commentItem.className = "progress-comment";
+
+                const author = comment.createdBy?.name || "Unknown user";
+                const date = comment.createdAt
+                    ? new Date(comment.createdAt).toLocaleString()
+                    : "";
+
+                commentItem.textContent =
+                    `${author} (${date}): ${comment.text}`;
+
+                progressSection.appendChild(commentItem);
+            });
+        }
+
+        // ADD PROGRESS COMMENT
+        const commentInput = document.createElement("textarea");
+        commentInput.className = "progress-input";
+        commentInput.placeholder = "Write a progress update...";
+        commentInput.maxLength = 500;
+        commentInput.rows = 2;
+
+        const saveCommentButton = document.createElement("button");
+        saveCommentButton.className = "progress-btn";
+        saveCommentButton.textContent = "Add Comment";
+
+        saveCommentButton.addEventListener("click", async () => {
+            const commentText = commentInput.value.trim();
+
+            if (!commentText) {
+                alert("Please enter a comment.");
+                return;
+            }
+
+            try {
+                saveCommentButton.disabled = true;
+
+                const response = await fetch(
+                    `${API_URL}/tasks/${task._id}/comments`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": "Bearer " + token
+                        },
+                        body: JSON.stringify({ text: commentText })
+                    }
+                );
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    alert(result.message || "Unable to add comment.");
+                    saveCommentButton.disabled = false;
+                    return;
+                }
+
+                await loadTasks();
+
+            } catch (error) {
+                console.error("ADD COMMENT ERROR:", error);
+                alert("Unable to add progress comment.");
+                saveCommentButton.disabled = false;
+            }
+        });
+
+        // TASK ACTIONS
         const actions = document.createElement("div");
         actions.className = "task-actions";
 
@@ -310,12 +393,16 @@ function renderTasks() {
         actions.appendChild(editButton);
         actions.appendChild(deleteButton);
 
+        // FINAL TASK CARD ORDER
         card.appendChild(title);
         card.appendChild(description);
         card.appendChild(assignee);
         card.appendChild(priority);
         card.appendChild(statusText);
         card.appendChild(due);
+        card.appendChild(progressSection);
+        card.appendChild(commentInput);
+        card.appendChild(saveCommentButton);
         card.appendChild(actions);
 
         column.appendChild(card);
@@ -337,7 +424,6 @@ function renderTasks() {
     });
 
     if (filteredTasks.length === 0) {
-        // Empty-state messages are displayed in each Kanban column.
         console.log("No tasks match the selected filters.");
     }
 }
@@ -365,7 +451,6 @@ document.getElementById("clearFilters")
         renderTasks();
     });
 
-// UPDATE TASK
 // UPDATE TASK
 async function updateTask(taskId) {
     const newPriority = prompt(
@@ -400,10 +485,7 @@ async function updateTask(taskId) {
         return;
     }
 
-    if (
-        newDueDate &&
-        isNaN(Date.parse(newDueDate))
-    ) {
+    if (newDueDate && isNaN(Date.parse(newDueDate))) {
         alert("Invalid due date.");
         return;
     }

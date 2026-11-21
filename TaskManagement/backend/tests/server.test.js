@@ -124,3 +124,105 @@ test("POST /api/tasks/:id/comments should reject long comment", async () => {
 
     assert.strictEqual(response.status, 400);
 });
+
+
+// Test 12: User should not create tasks
+test("POST /api/tasks should reject normal user", async () => {
+    const response = await request(app)
+        .post("/api/tasks")
+        .set("Authorization", `Bearer ${generateToken("user")}`)
+        .send({
+            title: "Unauthorized Task",
+            description: "Testing user permissions",
+            assignedTo: "64b000000000000000000001"
+        });
+
+    assert.strictEqual(response.status, 403);
+});
+
+// Test 13: User should not update tasks
+test("PUT /api/tasks/:id should reject normal user", async () => {
+    const response = await request(app)
+        .put("/api/tasks/64b000000000000000000001")
+        .set("Authorization", `Bearer ${generateToken("user")}`)
+        .send({ status: "Done" });
+
+    assert.strictEqual(response.status, 403);
+});
+
+// Test 14: User should not delete tasks
+test("DELETE /api/tasks/:id should reject normal user", async () => {
+    const response = await request(app)
+        .delete("/api/tasks/64b000000000000000000001")
+        .set("Authorization", `Bearer ${generateToken("user")}`);
+
+    assert.strictEqual(response.status, 403);
+});
+
+// Test 15: User should not add progress comments
+test("POST comments should reject normal user", async () => {
+    const response = await request(app)
+        .post("/api/tasks/64b000000000000000000001/comments")
+        .set("Authorization", `Bearer ${generateToken("user")}`)
+        .send({ text: "Unauthorized comment" });
+
+    assert.strictEqual(response.status, 403);
+});
+
+// Test 16: Invalid task ID should be rejected
+test("GET /api/tasks/:id should reject invalid ID", async () => {
+    const response = await request(app)
+        .get("/api/tasks/invalid-id")
+        .set("Authorization", `Bearer ${generateToken("user")}`);
+
+    assert.strictEqual(response.status, 400);
+});
+
+// Test 17: Update should reject invalid task ID
+test("PUT /api/tasks/:id should reject invalid ID", async () => {
+    const response = await request(app)
+        .put("/api/tasks/invalid-id")
+        .set("Authorization", `Bearer ${generateToken("management")}`)
+        .send({ status: "Done" });
+
+    assert.strictEqual(response.status, 400);
+});
+
+// Test 18: Delete should reject invalid task ID
+test("DELETE /api/tasks/:id should reject invalid ID", async () => {
+    const response = await request(app)
+        .delete("/api/tasks/invalid-id")
+        .set("Authorization", `Bearer ${generateToken("management")}`);
+
+    assert.strictEqual(response.status, 400);
+});
+
+// Test 19: Update should reject invalid status
+test("PUT /api/tasks should reject invalid status", async () => {
+    const response = await request(app)
+        .put("/api/tasks/64b000000000000000000001")
+        .set("Authorization", `Bearer ${generateToken("management")}`)
+        .send({ status: "Completed" });
+
+    assert.strictEqual(response.status, 400);
+});
+
+// Test 20: Update should reject invalid priority
+test("PUT /api/tasks should reject invalid priority", async () => {
+    const response = await request(app)
+        .put("/api/tasks/64b000000000000000000001")
+        .set("Authorization", `Bearer ${generateToken("management")}`)
+        .send({ priority: "Urgent" });
+
+    assert.strictEqual(response.status, 400);
+});
+
+// Test 21: Comment should reject invalid task ID
+test("POST comments should reject invalid task ID", async () => {
+    const response = await request(app)
+        .post("/api/tasks/invalid-id/comments")
+        .set("Authorization", `Bearer ${generateToken("management")}`)
+        .send({ text: "Testing invalid task ID" });
+
+    assert.strictEqual(response.status, 400);
+});
