@@ -1,104 +1,235 @@
-# Bravvus Solutions Website
+# Bravvus Solutions - Company Website & Task Management System
 
-A responsive company website with a working enquiry form connected to a Node.js/Express backend and MongoDB database.
+## 1. Project Overview
 
-## Features
+Bravvus Solutions is a web-based company website and task management application developed using HTML, CSS, JavaScript, Node.js, Express.js and MongoDB.
 
-- Responsive Home, About, Services and Contact sections
-- Navigation and call-to-action buttons
-- Responsive layout for desktop and mobile screens
-- Client-side contact form validation
-- Email format validation
-- Express.js REST API for enquiries
-- MongoDB database integration using Mongoose
-- Success and error feedback for form submission
-- Environment variables for database configuration
+The project consists of two major modules:
 
-## Technologies Used
+- **Task 1 – Company Website:** A responsive company website with an enquiry form connected to a backend API.
+- **Task 2 – Task Management System:** A role-based task management application that allows administrators and management users to assign, track and manage tasks, while users can view and update their assigned tasks.
 
+## 2. Features
+
+### Task 1 – Company Website
+
+- Responsive Home, About, Services and Contact sections.
+- Navigation and call-to-action buttons.
+- Client-side form validation.
+- Email format validation.
+- Enquiry submission through a REST API.
+- MongoDB integration for storing enquiries.
+- Success and error feedback.
+
+### Task 2 – Task Management System
+
+- Secure user registration and login.
+- Password hashing using bcrypt.
+- JWT-based authentication.
+- Role-based access control.
+- Separate Admin, Management and User portals.
+- Task creation, assignment, updating and deletion.
+- Task priorities: Low, Medium and High.
+- Task statuses: To Do, In Progress, In Review and Done.
+- Due dates and overdue task tracking.
+- Kanban-style task board.
+- Task search and filtering.
+- Progress Notes and task activity tracking.
+- User management and role management.
+
+### User Roles
+
+| Role | Responsibilities |
+|---|---|
+| Admin | Manage users, roles and tasks. |
+| Management | Create, assign, update and monitor tasks. |
+| User | View assigned tasks and update task progress. |
+
+## 3. Technologies Used
+
+### Frontend
 - HTML5
 - CSS3
 - JavaScript
+
+### Backend
 - Node.js
 - Express.js
 - MongoDB
 - Mongoose
-- Git & GitHub
+- bcrypt
+- JSON Web Token (JWT)
 
-## Setup Instructions
+### Testing
+- Node.js built-in test runner
+- Supertest
+- c8 code coverage
 
-### 1. Install dependencies
+### Tools
+- Visual Studio Code
+- Git and GitHub
+- Vercel
+- MongoDB Atlas
+- Jira
 
-Open a terminal inside the `backend` folder and run:
+## 4. Project Structure
+
+Bravus-Internship/
+|
+|-- Task 1 files/
+|   |-- backend/
+|   |-- index.html
+|   |-- admin.html
+|   |-- login.html
+|   |-- management.html
+|   |-- user.html
+|   |-- script.js
+|   |-- style.css
+|
+|-- TaskManagement/
+|   |-- frontend/
+|   |   |-- index.html
+|   |   |-- login.html
+|   |   |-- admin.html
+|   |   |-- management.html
+|   |   |-- user.html
+|   |
+|   |-- backend/
+|       |-- models/
+|       |-- tests/
+|       |-- server.js
+|       |-- package.json
+|
+|-- .gitignore
+|-- README.md
+
+## 5. Installation and Setup
+
+### Prerequisites
+
+- Node.js and npm
+- MongoDB Atlas account or MongoDB instance
+- Git
+- Visual Studio Code
+
+### Step 1 – Clone the repository
+
+```bash
+git clone https://github.com/shambhavid9/Bravus-Internship.git
+cd Bravus-Internship
+```
+
+### Step 2 – Install backend dependencies
+
+Open a terminal in `TaskManagement/backend`:
 
 ```bash
 npm install
 ```
 
-### 2. Configure environment variables
+### Step 3 – Configure environment variables
 
-Create a `.env` file inside the `backend` folder:
+Create a `.env` file inside `TaskManagement/backend`:
 
 ```env
-MONGODB_URI=your_mongodb_connection_string
+MONGODB_URI=your_production_database_connection_string
+JWT_SECRET=your_secure_jwt_secret
+ADMIN_NEW_PASSWORD=your_temporary_admin_password
+MONGODB_TEST_URI=your_test_database_connection_string
 ```
 
-Do not commit the `.env` file to GitHub.
+**Important:**
+- Never commit the `.env` file.
+- Use a separate database for automated tests.
+- Keep database credentials and JWT secrets private.
+- `ADMIN_NEW_PASSWORD` is used only by the local admin password reset utility.
 
-### 3. Start the backend
+### Step 4 – Start the backend
 
-Inside the `backend` folder, run:
+From `TaskManagement/backend`, run:
 
 ```bash
 node server.js
 ```
 
-The backend will run on:
+The local backend runs on:
 
 ```text
 http://localhost:3001
 ```
 
-### 4. Run the frontend
+### Step 5 – Run the frontend
 
-Open the frontend `index.html` using VS Code Live Server.
+Open `TaskManagement/frontend/index.html` using Visual Studio Code Live Server.
 
-The frontend communicates with the backend enquiry API.
+The frontend communicates with the deployed or locally configured backend API.
 
-## API Endpoint
+## 6. Automated Testing
 
-### POST `/api/enquiries`
+The Task Management backend uses Node.js built-in testing and Supertest for API and integration testing.
 
-Example request:
+### Run tests
 
-```json
-{
-  "name": "Test User",
-  "email": "test@example.com",
-  "message": "Test enquiry"
-}
+From `TaskManagement/backend`:
+
+```bash
+npm test
 ```
 
-The enquiry is validated and stored in MongoDB.
+### Generate code coverage report
 
-## Testing
+```bash
+npm run coverage
+```
 
-The following cases were tested:
+### Latest test results
 
-- Empty form fields
-- Invalid email format
-- Valid enquiry submission
-- Successful database storage
-- Success and error feedback
-- Desktop and responsive layouts
-- Browser console checked for errors
+| Metric | Result |
+|---|---:|
+| Total tests | 52 |
+| Passed | 52 |
+| Failed | 0 |
+| Statement coverage | 87.05% |
+| Branch coverage | 89.79% |
+| Function coverage | 66.66% |
+| Line coverage | 87.05% |
 
-## Security
+Tests cover authentication, user management, role-based access, task operations, validation, task assignment and progress comments.
 
+The coverage command generates a local HTML report in the `coverage/` directory.
+
+## 7. Deployment
+
+### Task Management System
+
+- Frontend: https://bravus-internship-frontend.vercel.app
+- Backend: https://bravus-internship-backend.vercel.app
+
+### Main Website
+
+The main company website is maintained separately under the `Task 1 files` directory.
+
+## 8. Security
+
+- Passwords are hashed using bcrypt.
+- JWT is used for authentication.
+- Role-based authorization protects restricted routes.
 - MongoDB credentials are stored in environment variables.
-- `.env` and `node_modules/` are excluded using `.gitignore`.
-- Database credentials are not included in the repository.
+- `.env` and `node_modules/` are excluded through `.gitignore`.
+- Automated integration tests use a separate test database.
 
-## Status
+## 9. Known Limitations and Future Improvements
 
-Task 1 implementation completed and tested.
+- Increase automated test coverage for remaining error-handling and startup paths.
+- Add automated browser-based end-to-end testing.
+- Improve notification functionality for task assignments and updates.
+- Further enhance frontend responsiveness and accessibility.
+- Add more detailed reporting and analytics.
+
+## 10. Project Status
+
+The project includes the company website, role-based task management portals, task tracking, progress comments, backend API testing and deployment.
+
+The automated backend test suite currently passes all 52 tests.
+
+Further manual verification and final handover documentation are part of the final testing and handover process.
