@@ -13,7 +13,18 @@ if (process.env.NODE_ENV !== "production") {
 
 const PORT = process.env.PORT || 4000;
 
-mongoose.connect(process.env.MONGODB_URI)
+const mongoUri = process.env.MONGODB_URI;
+
+console.log("MongoDB URI diagnostic:", {
+    exists: Boolean(mongoUri),
+    length: mongoUri ? mongoUri.length : 0,
+    validScheme: typeof mongoUri === "string" &&
+        /^mongodb(\+srv)?:\/\//.test(mongoUri.trim()),
+    hasOuterQuotes: typeof mongoUri === "string" &&
+        /^["']|["']$/.test(mongoUri.trim())
+});
+
+mongoose.connect(mongoUri)
     .then(function() {
         console.log("Mongo connected successfully!");
 
