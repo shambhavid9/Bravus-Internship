@@ -1,0 +1,51 @@
+
+/* SYSTEM OVERVIEW */
+
+#dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin: 25px 0;
+}
+
+#dashboard-stats > div {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 22px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#dashboard-stats > div:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+#dashboard-stats h3 {
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0 0 12px;
+}
+
+#dashboard-stats p {
+    color: #111827;
+    font-size: 30px;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* RESPONSIVE DESIGN */
+
+@media (max-width: 768px) {
+    #dashboard-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    #dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+}
