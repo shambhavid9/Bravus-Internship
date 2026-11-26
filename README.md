@@ -166,7 +166,7 @@ The frontend communicates with the deployed or locally configured backend API.
 
 ## 6. Automated Testing
 
-The Task Management backend uses Node.js built-in testing and Supertest for API and integration testing.
+The Task Management backend uses the Node.js built-in test runner and Supertest for API and integration testing.
 
 ### Run tests
 
@@ -186,15 +186,26 @@ npm run coverage
 
 | Metric | Result |
 |---|---:|
-| Total tests | 52 |
-| Passed | 52 |
+| Total tests | 60 |
+| Passed | 60 |
 | Failed | 0 |
-| Statement coverage | 87.05% |
-| Branch coverage | 89.79% |
+| Statement coverage | 88.86% |
+| Branch coverage | 91.61% |
 | Function coverage | 66.66% |
-| Line coverage | 87.05% |
+| Line coverage | 88.86% |
 
-Tests cover authentication, user management, role-based access, task operations, validation, task assignment and progress comments.
+### Test coverage includes
+
+- User registration and login validation.
+- Authentication and JWT authorization.
+- Role-based access control.
+- User and role management.
+- Task creation, assignment, updating and deletion.
+- Task status and priority validation.
+- Progress comments and activity tracking.
+- Invalid input and unauthorized access.
+- Database error handling for task status updates, deletion and progress comments.
+- End-to-end backend integration workflows.
 
 The coverage command generates a local HTML report in the `coverage/` directory.
 
@@ -220,16 +231,31 @@ The main company website is maintained separately under the `Task 1 files` direc
 
 ## 9. Known Limitations and Future Improvements
 
-- Increase automated test coverage for remaining error-handling and startup paths.
-- Add automated browser-based end-to-end testing.
-- Improve notification functionality for task assignments and updates.
-- Further enhance frontend responsiveness and accessibility.
-- Add more detailed reporting and analytics.
+- Automated browser-based end-to-end testing has not yet been implemented.
+- Function coverage can be improved by testing additional server functions.
+- Frontend responsiveness and accessibility can be further enhanced.
+- Task assignment and update notifications can be expanded.
+- Additional reporting and analytics features can be introduced.
+
+These are potential improvements beyond the currently implemented core functionality.
 
 ## 10. Project Status
 
-The project includes the company website, role-based task management portals, task tracking, progress comments, backend API testing and deployment.
+The project includes:
 
-The automated backend test suite currently passes all 52 tests.
+- Responsive company website with enquiry form integration.
+- Role-based Admin, Management and User portals.
+- Task creation, assignment and progress tracking.
+- Task comments and activity history.
+- Backend API validation and authorization.
+- Automated backend tests and code coverage reporting.
+- Frontend and backend deployment on Vercel.
 
-Further manual verification and final handover documentation are part of the final testing and handover process.
+### Current Testing Status
+
+- 60 automated backend tests passing.
+- 88.86% statement coverage.
+- 91.61% branch coverage.
+- Database error-handling scenarios covered by automated tests.
+
+Final manual verification, known-issue review and project walkthrough are part of the remaining handover activities.
