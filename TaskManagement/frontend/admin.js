@@ -74,7 +74,7 @@ async function loadTasks() {
     try {
 
         const response = await fetch(
-            "https://bravus-internship-backend.vercel.app/api/users",
+            "https://bravus-internship-backend.vercel.app/api/tasks",
             {
                 method: "GET",
                 headers: {
