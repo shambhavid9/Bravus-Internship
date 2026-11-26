@@ -1,4 +1,6 @@
 
+const API_URL = "https://bravus-internship-backend.vercel.app";
+
 const token = localStorage.getItem("token");
 
 let currentUser = null;
@@ -9,7 +11,10 @@ try {
     currentUser = null;
 }
 
-// Authentication and role verification
+// ===============================
+// AUTHENTICATION
+// ===============================
+
 if (!token || !currentUser) {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -24,6 +29,19 @@ if (!token || !currentUser) {
 
 
 // ===============================
+// SYSTEM OVERVIEW
+// ===============================
+
+function updateStat(id, value) {
+    const element = document.getElementById(id);
+
+    if (element) {
+        element.textContent = value;
+    }
+}
+
+
+// ===============================
 // LOAD ALL USERS
 // ===============================
 
@@ -32,7 +50,7 @@ async function loadUsers() {
     try {
 
         const response = await fetch(
-            "https://bravus-internship-backend.vercel.app/api/users",
+            `${API_URL}/api/users`,
             {
                 method: "GET",
                 headers: {
@@ -52,12 +70,26 @@ async function loadUsers() {
             return;
         }
 
-        if (!data.users || data.users.length === 0) {
+        const users = data.users || [];
+
+        updateStat("totalUsers", users.length);
+
+        updateStat(
+            "totalAdmins",
+            users.filter(user => user.role === "admin").length
+        );
+
+        updateStat(
+            "totalManagement",
+            users.filter(user => user.role === "management").length
+        );
+
+        if (users.length === 0) {
             usersDiv.innerHTML = "<p>No users found.</p>";
             return;
         }
 
-        data.users.forEach(user => {
+        users.forEach(user => {
 
             const userElement = document.createElement("div");
 
@@ -127,7 +159,7 @@ async function updateUserRole(userId) {
         message.textContent = "Updating role...";
 
         const response = await fetch(
-            `https://bravus-internship-backend.vercel.app/api/users/${userId}/role`,
+            `${API_URL}/api/users/${userId}/role`,
             {
                 method: "PUT",
                 headers: {
@@ -141,12 +173,9 @@ async function updateUserRole(userId) {
         const data = await response.json();
 
         if (!response.ok) {
-
             message.textContent =
                 data.message || "Failed to update role.";
-
             return;
-
         }
 
         message.textContent = "Role updated successfully!";
@@ -160,7 +189,8 @@ async function updateUserRole(userId) {
         const message = document.getElementById(`message-${userId}`);
 
         if (message) {
-            message.textContent = "Something went wrong. Please try again.";
+            message.textContent =
+                "Something went wrong. Please try again.";
         }
 
     }
@@ -177,7 +207,7 @@ async function loadTasks() {
     try {
 
         const response = await fetch(
-            "https://bravus-internship-backend.vercel.app/api/tasks",
+            `${API_URL}/api/tasks`,
             {
                 method: "GET",
                 headers: {
@@ -197,12 +227,31 @@ async function loadTasks() {
             return;
         }
 
-        if (!data.tasks || data.tasks.length === 0) {
+        const tasks = data.tasks || [];
+
+        updateStat("totalTasks", tasks.length);
+
+        updateStat(
+            "todoTasks",
+            tasks.filter(task => task.status === "To Do").length
+        );
+
+        updateStat(
+            "inProgressTasks",
+            tasks.filter(task => task.status === "In Progress").length
+        );
+
+        updateStat(
+            "completedTasks",
+            tasks.filter(task => task.status === "Done").length
+        );
+
+        if (tasks.length === 0) {
             tasksDiv.innerHTML = "<p>No tasks found.</p>";
             return;
         }
 
-        data.tasks.forEach(task => {
+        tasks.forEach(task => {
 
             const taskElement = document.createElement("div");
 
@@ -255,3 +304,11 @@ function logout() {
     window.location.href = "login.html";
 
 }
+
+
+// ===============================
+// INITIAL DASHBOARD LOAD
+// ===============================
+
+loadUsers();
+loadTasks();
