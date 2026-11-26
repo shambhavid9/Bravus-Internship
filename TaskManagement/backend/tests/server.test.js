@@ -6,6 +6,7 @@ const { test } = require("node:test");
 const assert = require("node:assert");
 const request = require("supertest");
 const jwt = require("jsonwebtoken");
+const Task = require("../models/Task");
 
 const app = require("../server");
 
@@ -256,4 +257,88 @@ test("POST comments should reject invalid task ID", async () => {
         .send({ text: "Testing invalid task ID" });
 
     assert.strictEqual(response.status, 400);
+});
+
+
+// Test 22: Status update should handle database errors
+test("PATCH status should handle database errors", async () => {
+    const originalFindById = Task.findById;
+
+    try {
+        Task.findById = async () => ({
+            assignedTo: "64b000000000000000000001",
+            status: "To Do",
+            activity: [],
+            save: async () => {
+                throw new Error("Simulated database error");
+            }
+        });
+
+        const response = await request(app)
+            .patch("/api/tasks/64b000000000000000000001/status")
+            .set("Authorization", `Bearer ${generateToken("user")}`)
+            .send({ status: "Done" });
+
+        assert.strictEqual(response.status, 500);
+        assert.strictEqual(
+            response.body.message,
+            "Failed to update task status."
+        );
+    } finally {
+        Task.findById = originalFindById;
+    }
+});
+
+// Test 23: Task deletion should handle database errors
+test("DELETE task should handle database errors", async () => {
+    const originalFindById = Task.findById;
+    const originalFindByIdAndDelete = Task.findByIdAndDelete;
+
+    try {
+        Task.findById = async () => ({});
+
+        Task.findByIdAndDelete = async () => {
+            throw new Error("Simulated database error");
+        };
+
+        const response = await request(app)
+            .delete("/api/tasks/64b000000000000000000001")
+            .set("Authorization", `Bearer ${generateToken("management")}`);
+
+        assert.strictEqual(response.status, 500);
+        assert.strictEqual(
+            response.body.message,
+            "Failed to delete task."
+        );
+    } finally {
+        Task.findById = originalFindById;
+        Task.findByIdAndDelete = originalFindByIdAndDelete;
+    }
+});
+
+// Test 24: Adding a comment should handle database errors
+test("POST comment should handle database errors", async () => {
+    const originalFindById = Task.findById;
+
+    try {
+        Task.findById = async () => ({
+            comments: [],
+            save: async () => {
+                throw new Error("Simulated database error");
+            }
+        });
+
+        const response = await request(app)
+            .post("/api/tasks/64b000000000000000000001/comments")
+            .set("Authorization", `Bearer ${generateToken("management")}`)
+            .send({ text: "Testing database error handling" });
+
+        assert.strictEqual(response.status, 500);
+        assert.strictEqual(
+            response.body.message,
+            "Failed to add progress note."
+        );
+    } finally {
+        Task.findById = originalFindById;
+    }
 });
