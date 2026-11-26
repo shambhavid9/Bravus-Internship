@@ -128,6 +128,7 @@ app.get(
     }
 );
 
+
 // Create user (public registration always creates User role)
 app.post("/api/users", async function(req, res) {
     const { name, email, password } = req.body;
@@ -167,13 +168,15 @@ app.post("/api/users", async function(req, res) {
             }
         });
     } catch (error) {
-        console.log("USER CREATION ERROR:", error);
-
         if (error.code === 11000) {
+            console.log("Registration rejected: Email already exists.");
+
             return res.status(409).json({
                 message: "An account with this email already exists."
             });
         }
+
+        console.error("USER CREATION ERROR:", error);
 
         res.status(500).json({
             message: "Failed to create user."
