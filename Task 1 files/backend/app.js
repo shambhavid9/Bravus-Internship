@@ -5,12 +5,15 @@ function createApp(Enquiry) {
 
     const app = express();
 
-   app.use(cors({
+  app.use(cors({
     origin: [
         "http://127.0.0.1:5500",
         "http://127.0.0.1:5501",
-        "https://bravus-complete-website-ipxm0vjd9-sd-9633.vercel.app"
-    ]
+        "https://bravus-complete-website-ipxm0vjd9-sd-9633.vercel.app",
+        "https://bravus-complete-website-dblkc61do-sd-9633.vercel.app"
+    ],
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
 }));
     app.use(express.json());
 
