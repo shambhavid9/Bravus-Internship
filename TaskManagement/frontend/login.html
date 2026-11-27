@@ -1,38 +1,304 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Task Management</title>
-    
+    <title>Login | Bravvus Solutions</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #101212;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 1000px;
+            min-height: 580px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: #191d1d;
+            border: 1px solid #303535;
+            border-radius: 22px;
+            overflow: hidden;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
+        }
+
+        .welcome-panel {
+            padding: 55px 45px;
+            background:
+                radial-gradient(circle at 15% 85%, rgba(242, 106, 33, 0.2), transparent 40%),
+                linear-gradient(145deg, #252b2b, #151919);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .brand {
+            font-size: 23px;
+            font-weight: 750;
+            letter-spacing: 1px;
+        }
+
+        .brand span {
+            color: #f47736;
+        }
+
+        .welcome-content {
+            margin: 65px 0;
+        }
+
+        .welcome-tag {
+            color: #f47736;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .welcome-content h1 {
+            font-size: clamp(32px, 4vw, 45px);
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .welcome-content h1 span {
+            color: #f47736;
+        }
+
+        .welcome-content p {
+            color: #aeb7b5;
+            line-height: 1.8;
+            font-size: 15px;
+            max-width: 350px;
+        }
+
+        .welcome-footer {
+            color: #7f8987;
+            font-size: 12px;
+        }
+
+        .form-panel {
+            padding: 55px 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-heading {
+            margin-bottom: 35px;
+        }
+
+        .form-heading h2 {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .form-heading p {
+            color: #929d9a;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #dce1df;
+            margin-bottom: 9px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px 16px;
+            background: #222828;
+            border: 1px solid #3a4241;
+            border-radius: 9px;
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            transition: 0.2s ease;
+        }
+
+        .form-group input::placeholder {
+            color: #77817e;
+        }
+
+        .form-group input:focus {
+            border-color: #f47736;
+            box-shadow: 0 0 0 3px rgba(244, 119, 54, 0.12);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 8px;
+            border: none;
+            border-radius: 9px;
+            background: #f47736;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .login-button:hover {
+            background: #dc6125;
+            transform: translateY(-1px);
+        }
+
+        .login-button:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #loginMessage {
+            min-height: 22px;
+            margin-top: 18px;
+            color: #ff8585;
+            font-size: 13px;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        .secure-note {
+            margin-top: 28px;
+            text-align: center;
+            color: #7f8987;
+            font-size: 12px;
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 16px;
+            }
+
+            .login-wrapper {
+                grid-template-columns: 1fr;
+                max-width: 430px;
+                min-height: auto;
+            }
+
+            .welcome-panel {
+                padding: 28px 28px 22px;
+            }
+
+            .welcome-content {
+                margin: 35px 0 25px;
+            }
+
+            .welcome-content h1 {
+                font-size: 30px;
+            }
+
+            .welcome-content p {
+                font-size: 13px;
+            }
+
+            .welcome-footer {
+                display: none;
+            }
+
+            .form-panel {
+                padding: 35px 28px;
+            }
+
+            .form-heading h2 {
+                font-size: 26px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-    <div class="login-container">
-        <h1>Task Management</h1>
-        <h2>Login</h2>
+    <main class="login-wrapper">
 
-        <form id="loginForm">
-            <input
-                type="email"
-                id="email"
-                placeholder="Email"
-                required
-            >
+        <section class="welcome-panel">
+            <div class="brand">BRAVVUS<span>.</span></div>
 
-            <input
-                type="password"
-                id="password"
-                placeholder="Password"
-                required
-            >
+            <div class="welcome-content">
+                <div class="welcome-tag">Task Management Platform</div>
 
-            <button type="submit">Login</button>
+                <h1>Work smarter.<br>
+                    <span>Achieve more.</span>
+                </h1>
 
-            <p id="loginMessage"></p>
-        </form>
-    </div>
+                <p>
+                    Welcome to your workspace. Manage tasks,
+                    track progress and collaborate with your team
+                    through one centralized platform.
+                </p>
+            </div>
+
+            <div class="welcome-footer">
+                © 2026 Bravvus Solutions. All rights reserved.
+            </div>
+        </section>
+
+        <section class="form-panel">
+            <div class="form-heading">
+                <h2>Welcome back</h2>
+                <p>Sign in to continue to your workspace.</p>
+            </div>
+
+            <form id="loginForm">
+
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email"
+                        autocomplete="username"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="login-button" id="loginButton">
+                    Sign In
+                </button>
+
+                <p id="loginMessage" role="alert"></p>
+
+            </form>
+
+            <div class="secure-note">
+                Secure access to your Bravvus workspace
+            </div>
+        </section>
+
+    </main>
 
     <script>
         document.getElementById("loginForm").addEventListener("submit", async function(event) {
@@ -40,29 +306,32 @@
 
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
-
-            console.log("Email:", email);
-            console.log("Password:", password);
             const message = document.getElementById("loginMessage");
+            const button = document.getElementById("loginButton");
+
+            message.textContent = "";
+            button.disabled = true;
+            button.textContent = "Signing in...";
 
             try {
                 const response = await fetch(
-    "https://bravus-internship-backend.vercel.app/api/login",
-    {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            email: email,
-            password: password
-        })
-    }
-);
+                    "https://bravus-internship-backend.vercel.app/api/login",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            email: email,
+                            password: password
+                        })
+                    }
+                );
+
                 const data = await response.json();
 
                 if (!response.ok) {
-                    message.textContent = data.message;
+                    message.textContent = data.message || "Login failed.";
                     return;
                 }
 
@@ -71,17 +340,23 @@
 
                 if (data.user.role === "user") {
                     window.location.href = "user.html";
-                } 
+                }
                 else if (data.user.role === "management") {
                     window.location.href = "management.html";
-                } 
+                }
                 else if (data.user.role === "admin") {
                     window.location.href = "admin.html";
+                }
+                else {
+                    message.textContent = "Your account has an unsupported role.";
                 }
 
             } catch (error) {
                 console.error("LOGIN ERROR:", error);
                 message.textContent = "Unable to connect to server.";
+            } finally {
+                button.disabled = false;
+                button.textContent = "Sign In";
             }
         });
     </script>
